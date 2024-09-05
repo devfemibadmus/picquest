@@ -62,3 +62,52 @@ def login(request):
         'total_tasks_taken': pending_tasks_count + completed_tasks_count,
     }
     return JsonResponse({'success': True, 'token': new_token, 'account': account, 'tasks': tasks}, status=200)
+
+def tasks(request):
+    if request.method != "POST":
+        return redirect('https://app.aiannotaion.site')
+    token = request.POST.get('token')
+    if token is None or not Token.objects.filter(key=token).exists():
+        return JsonResponse({'error': True, 'message': 'Invalid Authorization token'}, status=400)
+    user = Token.objects.get(key=token).user
+    tasks = UserTasks.objects.get(user=user)
+    pending_tasks_count = UserTasks.objects.filter(user=user, status='pending').count()
+    completed_tasks_count = UserTasks.objects.filter(user=user, status='completed').count()
+    tasks = {
+        'pending_tasks': pending_tasks_count,
+        'completed_tasks': completed_tasks_count,
+        'total_tasks_taken': pending_tasks_count + completed_tasks_count,
+    }
+    return JsonResponse({'success': True, 'tasks': tasks}, status=200)
+
+def newTask(request):
+    if request.method != "POST":
+        return redirect('https://app.aiannotaion.site')
+    token = request.POST.get('token')
+    if token is None or not Token.objects.filter(key=token).exists():
+        return JsonResponse({'error': True, 'message': 'Invalid Authorization token'}, status=400)
+    user = Token.objects.get(key=token).user
+    if not user.is_verify:
+        return JsonResponse({'error': True, 'message': 'User is not verified'}, status=400)
+    today = timezone.now().date()
+    tasks_today = UserTasks.objects.filter(user=user, created_at__date=today).count()
+    if tasks_today >= 3:
+        return JsonResponse({'error': True, 'message': 'Task limit of 3 per day reached'}, status=400)
+    tasks_remaining = 3 - tasks_today
+    tasks_available = Tasks.objects.exclude(id__in=UserTasks.objects.filter(user=user).values_list('task_id', flat=True))[:tasks_remaining]
+    return JsonResponse({'success': True, 'message': 'successful', 'tasks': tasks_available}, status=200)
+
+def submit(request):
+    if request.method != "POST":
+        return redirect('https://app.aiannotaion.site')
+    token = request.POST.get('token')
+    task_id = request.POST.get('task_id')
+    photo_file = request.FILES.get('photo')
+    if photo_file is None or task_id is None or not Tasks.objects.filter(id=task_id).exists():
+        return JsonResponse({'error': True, 'message': 'Invalid Data Parse'}, status=400)
+    if token is None or not Token.objects.filter(key=token).exists():
+        return JsonResponse({'error': True, 'message': 'Invalid Authorization token'}, status=400)
+    user = Token.objects.get(key=token).user
+    tasks = Tasks.objects.get(id=task_id)
+    UserTasks.objects.create(user=user, task=tasks, created_at=timezone.now, photo=photo_file)
+    return JsonResponse({'success': True}, status=200)
