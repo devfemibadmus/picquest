@@ -111,3 +111,18 @@ def submit(request):
     tasks = Tasks.objects.get(id=task_id)
     UserTasks.objects.create(user=user, task=tasks, created_at=timezone.now, photo=photo_file)
     return JsonResponse({'success': True}, status=200)
+
+def verification(request):
+    if request.method != "POST":
+        return redirect('https://app.aiannotaion.site')
+    token = request.POST.get('token')
+    if token is None or not Token.objects.filter(key=token).exists():
+        return JsonResponse({'error': True, 'message': 'Invalid Authorization token'}, status=400)
+    form = VerificatonForm(request.POST)
+    if not form.is_valid():
+        return JsonResponse({'error': True, 'message': 'Invalid data'}, status=400)
+    user = Token.objects.get(key=token).user
+    user.is_verify = True
+    user.save()
+    return JsonResponse({'success': True}, status=200)
+
