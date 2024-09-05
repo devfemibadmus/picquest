@@ -33,3 +33,32 @@ def signup(request):
     user = User.objects.create(email=email, password=password)
     token = Token.objects.create(user=user)  
     return JsonResponse({'success': True, 'message': 'Account created successfully', 'token': token.key}, status=200)
+
+def login(request):
+    if request.method != "POST":
+        return redirect('https://app.aiannotaion.site')
+    form = SignupForm(request.POST)
+    if not form.is_valid():
+        return JsonResponse({'error': True, 'message': 'Invalid data'}, status=400)
+    email = form.cleaned_data['email']
+    password = form.cleaned_data['password']
+    user = authenticate(email=email, password=password)
+    if user is None:
+        return JsonResponse({'error': True, 'message': 'Invalid email or password'}, status=400)
+    old_token = Token.objects.get(user=user)
+    old_token.delete()
+    new_token = Token.objects.create(user=user).key
+    tasks = UserTasks.objects.get(user=user)
+    pending_tasks_count = UserTasks.objects.filter(user=user, status='pending').count()
+    completed_tasks_count = UserTasks.objects.filter(user=user, status='completed').count()
+    account = {
+        'email': user.email,
+        'earned': user.earned,
+        'full_name': user.get_full_name,
+    }
+    tasks = {
+        'pending_tasks': pending_tasks_count,
+        'completed_tasks': completed_tasks_count,
+        'total_tasks_taken': pending_tasks_count + completed_tasks_count,
+    }
+    return JsonResponse({'success': True, 'token': new_token, 'account': account, 'tasks': tasks}, status=200)
