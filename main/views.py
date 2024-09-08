@@ -7,6 +7,8 @@ from datetime import datetime
 from django.utils import timezone
 import json
 from api.models import User, UserTasks, Documents, Token, Tasks
+from django.views.decorators.csrf import csrf_exempt
+
 
 
 def load(request):
@@ -20,13 +22,16 @@ def load(request):
 def home(request):
     return render(request, 'home.html')
 
+@csrf_exempt
 def getuser(request=None, user=None):
-    if not request.user.is_authenticated:
+    if request is not None and request.user.is_authenticated:
+        user = request.user
+    elif user is None:
+        print("user is None")
         return JsonResponse({'error': True, 'message': 'Login required'}, status=400)
-    user = request.user
-    pending_tasks_count = UserTasks.objects.filter(user=user, status='pending').count()
-    completed_tasks_count = UserTasks.objects.filter(user=user, status='completed').count()
-    
+    pendingTasks = UserTasks.objects.filter(user=user, status='pendingTasks').count()
+    passedTasks = UserTasks.objects.filter(user=user, status='passedTasks').count()
+    failedTasks = UserTasks.objects.filter(user=user, status='failedTasks').count()
     today = timezone.now().date()
     tasks_today = UserTasks.objects.filter(user=user, created_at__date=today).count()
     if tasks_today >= 3:
@@ -41,19 +46,20 @@ def getuser(request=None, user=None):
         'isVerify': user.is_verify,
     }
     status = {
-        'pending_tasks': pending_tasks_count,
-        'completed_tasks': completed_tasks_count,
-        'total_tasks_taken': pending_tasks_count + completed_tasks_count,
+        'pendingTasks': pendingTasks,
+        'passedTasks': passedTasks,
+        'failedTasks': failedTasks,
     }
     if request is not None:
         return JsonResponse({'success': True, 'user': user, 'status': status, 'tasks': tasks}, status=200)
-    return user, status, tasks_available
+    return user, status, tasks
 
+@csrf_exempt
 def signup(request):
     if request.method != "POST":
         return redirect('https://app.aiannotaion.site')
     form = SignupForm(request.POST)
-    if not form.is_valid():
+    if form.is_valid() != True:
         return JsonResponse({'error': True, 'message': 'Invalid data'}, status=400)
     email = form.cleaned_data['email']
     password = form.cleaned_data['password']
@@ -63,19 +69,23 @@ def signup(request):
     user, status, tasks = getuser(user=user)
     return JsonResponse({'success': True, 'user': user, 'status': status, 'tasks': tasks}, status=200)
 
-def login(request):
+@csrf_exempt
+def userLogin(request):
     if request.method != "POST":
         return redirect('https://app.aiannotaion.site')
+    print(request.POST)
     form = LoginForm(request.POST)
-    if not form.is_valid():
-        return JsonResponse({'error': True, 'message': 'Invalid data'}, status=400)
+    
+    if form.is_valid() is not True:
+        print("form.is_valid()", form.is_valid())
+        return JsonResponse({'error': True, 'message': 'Invalid data'}, status=200)
     email = form.cleaned_data['email']
     password = form.cleaned_data['password']
-    user = authenticate(email=email, password=password)
+    user = authenticate(username=email, password=password)
     if user is None:
         return JsonResponse({'error': True, 'message': 'Invalid email or password'}, status=400)
     login(request, user)
-    user, status, tasks = getuser(user=user)
+    user, status, tasks = getuser(request=None, user=user)
     return JsonResponse({'success': True, 'user': user, 'status': status, 'tasks': tasks}, status=200)
 
 def status(request):
@@ -85,12 +95,12 @@ def status(request):
     pendingTasks = UserTasks.objects.filter(user=user, status='pendingTasks').count()
     passedTasks = UserTasks.objects.filter(user=user, status='passedTasks').count()
     failedTasks = UserTasks.objects.filter(user=user, status='failedTasks').count()
-    tasks = {
+    status = {
         'pendingTasks': pendingTasks,
         'passedTasks': passedTasks,
         'failedTasks': failedTasks,
     }
-    return JsonResponse({'success': True, 'tasks': tasks}, status=200)
+    return JsonResponse({'success': True, 'status': status}, status=200)
 
 def tasks(request):
     if not request.user.is_authenticated:

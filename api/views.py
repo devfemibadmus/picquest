@@ -42,7 +42,7 @@ def login(request):
         return JsonResponse({'error': True, 'message': 'Invalid data'}, status=400)
     email = form.cleaned_data['email']
     password = form.cleaned_data['password']
-    user = authenticate(email=email, password=password)
+    user = authenticate(username=email, password=password)
     if user is None:
         return JsonResponse({'error': True, 'message': 'Invalid email or password'}, status=400)
     old_token = Token.objects.get(user=user)

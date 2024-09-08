@@ -4,11 +4,18 @@ from django.contrib.auth.models import AbstractUser
 
 
 class User(AbstractUser):
+    email = models.EmailField(unique=True)
     balance = models.IntegerField(default=0)
     is_verify = models.BooleanField(default=False)
-
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['password'] 
     def __str__(self):
         return f"{self.email}"
+
+    def save(self, *args, **kwargs):
+        if not self.username:
+            self.username = self.email
+        super().save(*args, **kwargs)
 
 class Documents(models.Model):
     theFile = models.FileField(upload_to='Documents/')
