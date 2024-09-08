@@ -4,7 +4,7 @@ from django.contrib.auth.models import AbstractUser
 
 
 class User(AbstractUser):
-    earned = models.IntegerField(null=True)
+    balance = models.IntegerField(default=0)
     is_verify = models.BooleanField(default=False)
 
     def __str__(self):

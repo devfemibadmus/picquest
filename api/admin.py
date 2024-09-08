@@ -37,9 +37,9 @@ class UserTasksAdmin(admin.ModelAdmin):
 
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
-    list_display = ('id', 'email', 'earned', 'is_verify')
+    list_display = ('id', 'email', 'balance', 'is_verify')
     search_fields = ('email',)
-    list_filter = ('is_verify', 'earned')
+    list_filter = ('is_verify', 'balance')
     
 @admin.register(Token)
 class TokenAdmin(admin.ModelAdmin):
