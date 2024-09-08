@@ -1,13 +1,13 @@
-from django.http import JsonResponse
-from django.views.decorators.http import require_POST
-from api.forms import LoginForm, SignupForm, VerificatonForm
-from django.contrib.auth import login, authenticate
-from django.shortcuts import render, redirect
+import json
 from datetime import datetime
 from django.utils import timezone
-import json
-from api.models import User, UserTasks, Documents, Token, Tasks
+from django.http import JsonResponse
+from django.shortcuts import render, redirect
+from django.contrib.auth import login, authenticate
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
+from api.forms import LoginForm, SignupForm, VerificatonForm
+from api.models import User, UserTasks, Documents, Token, Tasks
 
 
 
@@ -22,37 +22,71 @@ def load(request):
 def home(request):
     return render(request, 'home.html')
 
-@csrf_exempt
-def getuser(request=None, user=None):
-    if request is not None and request.user.is_authenticated:
-        user = request.user
-    elif user is None:
-        print("user is None")
-        return JsonResponse({'error': True, 'message': 'Login required'}, status=400)
-    pendingTasks = UserTasks.objects.filter(user=user, status='pendingTasks').count()
-    passedTasks = UserTasks.objects.filter(user=user, status='passedTasks').count()
-    failedTasks = UserTasks.objects.filter(user=user, status='failedTasks').count()
-    today = timezone.now().date()
-    tasks_today = UserTasks.objects.filter(user=user, created_at__date=today).count()
-    if tasks_today >= 3:
-        return JsonResponse({'error': True, 'message': 'Task limit of 3 per day reached'}, status=400)
-    tasks_remaining = 3 - tasks_today
-    tasks_available = Tasks.objects.exclude(id__in=UserTasks.objects.filter(user=user).values_list('task_id', flat=True)).order_by('?')[:tasks_remaining]
-    tasks = list(tasks_available.values())
-    user = {
-        'name': user.first_name,
-        'email': user.email,
-        'balance': user.balance,
-        'isVerify': user.is_verify,
-    }
-    status = {
-        'pendingTasks': pendingTasks,
-        'passedTasks': passedTasks,
-        'failedTasks': failedTasks,
-    }
-    if request is not None:
-        return JsonResponse({'success': True, 'user': user, 'status': status, 'tasks': tasks}, status=200)
-    return user, status, tasks
+class UserView:
+    def __init__(self, user):
+        self.user = user
+
+    def getUser(self):
+        user_info = self.getUserInfo()
+        status = self.getUserStatus()
+        token = self.getUserToken()
+        tasks = self.getUserTasks()
+        return user_info, status, tasks, token
+
+    def getUserToken(self):
+        token, created = Token.objects.get_or_create(user=self.user)
+        if not created:
+            token.delete()
+            token = Token.objects.create(user=self.user)
+        return token.key
+
+    def getUserInfo(self):
+        user = self.user    
+        user_info = {
+            'name': user.first_name,
+            'email': user.email,
+            'balance': user.balance,
+            'isVerify': user.is_verify,
+        }                
+        return user_info
+    
+    def getUserStatus(self):
+        user = self.user
+        pendingTasks = UserTasks.objects.filter(user=user, status='pendingTasks').count()
+        passedTasks = UserTasks.objects.filter(user=user, status='passedTasks').count()
+        failedTasks = UserTasks.objects.filter(user=user, status='failedTasks').count()        
+        status = {
+            'pendingTasks': pendingTasks,
+            'passedTasks': passedTasks,
+            'failedTasks': failedTasks,
+        }   
+        return status
+    
+    def getUserTasks(self):
+        user = self.user
+        today = timezone.now().date()
+        tasks_today = UserTasks.objects.filter(user=user, created_at__date=today).count()
+        tasks_remaining = 3 - tasks_today
+        user_task_ids = UserTasks.objects.filter(user=self.user).values_list('task_id', flat=True)
+        tasks_available = Tasks.objects.exclude(id__in=user_task_ids).order_by('?')[:tasks_remaining]
+        tasks = list(tasks_available.values())
+        return tasks
+    
+    @csrf_exempt
+    @staticmethod
+    def getUserData(request):
+        if request.method != "POST":
+            return redirect('https://app.aiannotaion.site')
+        token_key = request.POST.get('token')
+        print(token_key)
+        try:
+            token = Token.objects.get(key=token_key)
+            user = token.user
+        except Token.DoesNotExist:
+            return JsonResponse({'error': True, 'message': 'Invalid Authorization token'}, status=400)
+        user, status, tasks, token = UserView(user).getUser()
+        return JsonResponse({'success': True, 'user': user, 'status': status, 'tasks': tasks, 'token': token}, status=200)
+
 
 @csrf_exempt
 def signup(request):
@@ -66,55 +100,43 @@ def signup(request):
     if User.objects.filter(email=email).exists():
         return JsonResponse({'error': True, 'message': 'Email already in use'}, status=400)
     user = User.objects.create(email=email, password=password)
-    user, status, tasks = getuser(user=user)
-    return JsonResponse({'success': True, 'user': user, 'status': status, 'tasks': tasks}, status=200)
+    user, status, tasks, token = UserView(user).getUser()
+    return JsonResponse({'success': True, 'user': user, 'status': status, 'tasks': tasks, 'token': token}, status=200)
 
 @csrf_exempt
-def userLogin(request):
+def signin(request):
     if request.method != "POST":
         return redirect('https://app.aiannotaion.site')
-    print(request.POST)
     form = LoginForm(request.POST)
-    
-    if form.is_valid() is not True:
-        print("form.is_valid()", form.is_valid())
+    if form.is_valid() != True:
         return JsonResponse({'error': True, 'message': 'Invalid data'}, status=200)
     email = form.cleaned_data['email']
     password = form.cleaned_data['password']
     user = authenticate(username=email, password=password)
     if user is None:
         return JsonResponse({'error': True, 'message': 'Invalid email or password'}, status=400)
-    login(request, user)
-    user, status, tasks = getuser(request=None, user=user)
-    return JsonResponse({'success': True, 'user': user, 'status': status, 'tasks': tasks}, status=200)
+    user, status, tasks, token = UserView(user).getUser()
+    return JsonResponse({'success': True, 'user': user, 'status': status, 'tasks': tasks, 'token': token}, status=200)
 
+@csrf_exempt
 def status(request):
-    if not request.user.is_authenticated:
-        return JsonResponse({'error': True, 'message': 'Login required'}, status=400)
-    user = request.user
-    pendingTasks = UserTasks.objects.filter(user=user, status='pendingTasks').count()
-    passedTasks = UserTasks.objects.filter(user=user, status='passedTasks').count()
-    failedTasks = UserTasks.objects.filter(user=user, status='failedTasks').count()
-    status = {
-        'pendingTasks': pendingTasks,
-        'passedTasks': passedTasks,
-        'failedTasks': failedTasks,
-    }
+    token_key = request.POST.get('token')
+    if token_key is None or not Token.objects.filter(key=token_key).exists():
+        return JsonResponse({'error': True, 'message': 'Invalid Authorization token'}, status=400)
+    user = Token.objects.get(key=token_key).user
+    status = UserView(user).getUserStatus()
     return JsonResponse({'success': True, 'status': status}, status=200)
 
+@csrf_exempt
 def tasks(request):
-    if not request.user.is_authenticated:
-        return JsonResponse({'error': True, 'message': 'Login required'}, status=400)
-    user = request.user
-    today = timezone.now().date()
-    tasks_today = UserTasks.objects.filter(user=user, created_at__date=today).count()
-    if tasks_today >= 3:
-        return JsonResponse({'error': True, 'message': 'Task limit of 3 per day reached'}, status=400)
-    tasks_remaining = 3 - tasks_today
-    tasks_available = Tasks.objects.exclude(id__in=UserTasks.objects.filter(user=user).values_list('task_id', flat=True)).order_by('?')[:tasks_remaining]
-    tasks = list(tasks_available.values())
+    token_key = request.POST.get('token')
+    if token_key is None or not Token.objects.filter(key=token_key).exists():
+        return JsonResponse({'error': True, 'message': 'Invalid Authorization token'}, status=400)
+    user = Token.objects.get(key=token_key).user
+    tasks = UserView(user).getUserTasks()
     return JsonResponse({'success': True, 'tasks': tasks}, status=200)
 
+@csrf_exempt
 def submit(request):
     if request.method != "POST":
         return redirect('https://app.aiannotaion.site')
@@ -131,6 +153,7 @@ def submit(request):
     UserTasks.objects.create(user=user, task=tasks, created_at=timezone.now, photo=photo_file)
     return JsonResponse({'success': True}, status=200)
 
+@csrf_exempt
 def verification(request):
     if request.method != "POST":
         return redirect('https://app.aiannotaion.site')
