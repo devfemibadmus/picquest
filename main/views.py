@@ -81,12 +81,13 @@ def status(request):
     user = request.user
     if user is None:
         return JsonResponse({'error': True, 'message': 'Login required'}, status=400)
-    pending_tasks_count = UserTasks.objects.filter(user=user, status='pending').count()
-    completed_tasks_count = UserTasks.objects.filter(user=user, status='completed').count()
+    pendingTasks = UserTasks.objects.filter(user=user, status='pendingTasks').count()
+    passedTasks = UserTasks.objects.filter(user=user, status='passedTasks').count()
+    failedTasks = UserTasks.objects.filter(user=user, status='failedTasks').count()
     tasks = {
-        'pending_tasks': pending_tasks_count,
-        'completed_tasks': completed_tasks_count,
-        'total_tasks_taken': pending_tasks_count + completed_tasks_count,
+        'pendingTasks': pendingTasks,
+        'passedTasks': passedTasks,
+        'failedTasks': failedTasks,
     }
     return JsonResponse({'success': True, 'tasks': tasks}, status=200)
 

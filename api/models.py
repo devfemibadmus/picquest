@@ -31,15 +31,15 @@ class Tasks(models.Model):
 
 class UserTasks(models.Model):
     STATUS_CHOICES = [
-        ('completed', 'Completed'),
-        ('failed', 'Failed'),
-        ('pending', 'Pending'),
+        ('pendingTasks', 'pendingTasks'),
+        ('passedTasks', 'passedTasks'),
+        ('failedTasks', 'failedTasks'),
     ]
     created_at = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     task = models.ForeignKey(Tasks, on_delete=models.CASCADE)
     photo = models.ImageField(upload_to="photos/")
-    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
+    status = models.CharField(max_length=15, choices=STATUS_CHOICES, default='pending')
 
     def __str__(self):
         return f"{self.task.title}"
