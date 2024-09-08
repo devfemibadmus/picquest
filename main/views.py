@@ -21,10 +21,9 @@ def home(request):
     return render(request, 'home.html')
 
 def getuser(request=None, user=None):
-    if request and request.user is not None:
-        user = request.user
-    if user is None:
+    if not request.user.is_authenticated:
         return JsonResponse({'error': True, 'message': 'Login required'}, status=400)
+    user = request.user
     pending_tasks_count = UserTasks.objects.filter(user=user, status='pending').count()
     completed_tasks_count = UserTasks.objects.filter(user=user, status='completed').count()
     
@@ -39,6 +38,7 @@ def getuser(request=None, user=None):
         'name': user.first_name,
         'email': user.email,
         'balance': user.balance,
+        'isVerify': user.is_verify,
     }
     status = {
         'pending_tasks': pending_tasks_count,
@@ -74,13 +74,14 @@ def login(request):
     user = authenticate(email=email, password=password)
     if user is None:
         return JsonResponse({'error': True, 'message': 'Invalid email or password'}, status=400)
+    login(request, user)
     user, status, tasks = getuser(user=user)
     return JsonResponse({'success': True, 'user': user, 'status': status, 'tasks': tasks}, status=200)
 
 def status(request):
-    user = request.user
-    if user is None:
+    if not request.user.is_authenticated:
         return JsonResponse({'error': True, 'message': 'Login required'}, status=400)
+    user = request.user
     pendingTasks = UserTasks.objects.filter(user=user, status='pendingTasks').count()
     passedTasks = UserTasks.objects.filter(user=user, status='passedTasks').count()
     failedTasks = UserTasks.objects.filter(user=user, status='failedTasks').count()
@@ -92,9 +93,9 @@ def status(request):
     return JsonResponse({'success': True, 'tasks': tasks}, status=200)
 
 def tasks(request):
-    user = request.user
-    if user is None:
+    if not request.user.is_authenticated:
         return JsonResponse({'error': True, 'message': 'Login required'}, status=400)
+    user = request.user
     today = timezone.now().date()
     tasks_today = UserTasks.objects.filter(user=user, created_at__date=today).count()
     if tasks_today >= 3:
@@ -109,9 +110,9 @@ def submit(request):
         return redirect('https://app.aiannotaion.site')
     task_id = request.POST.get('task_id')
     photo_file = request.FILES.get('photo')
-    user = request.user
-    if user is None:
+    if not request.user.is_authenticated:
         return JsonResponse({'error': True, 'message': 'Login required'}, status=400)
+    user = request.user
     if not user.is_verify:
         return JsonResponse({'error': True, 'message': 'Please verify your account first'}, status=400)
     if photo_file is None or task_id is None or not Tasks.objects.filter(id=task_id).exists():
@@ -123,9 +124,9 @@ def submit(request):
 def verification(request):
     if request.method != "POST":
         return redirect('https://app.aiannotaion.site')
-    user = request.user
-    if user is None:
+    if not request.user.is_authenticated:
         return JsonResponse({'error': True, 'message': 'Login required'}, status=400)
+    user = request.user
     form = VerificatonForm(request.POST)
     if not form.is_valid():
         return JsonResponse({'error': True, 'message': 'Invalid data'}, status=400)
