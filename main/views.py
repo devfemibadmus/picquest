@@ -24,8 +24,7 @@ def getuser(request=None, user=None):
     if request and request.user is not None:
         user = request.user
     if user is None:
-        return JsonResponse({'error': True, 'user': None, 'tasks': None}, status=400)
-    tasks = UserTasks.objects.get(user=user)
+        return JsonResponse({'error': True, 'message': 'Login required'}, status=400)
     pending_tasks_count = UserTasks.objects.filter(user=user, status='pending').count()
     completed_tasks_count = UserTasks.objects.filter(user=user, status='completed').count()
     
@@ -34,12 +33,12 @@ def getuser(request=None, user=None):
     if tasks_today >= 3:
         return JsonResponse({'error': True, 'message': 'Task limit of 3 per day reached'}, status=400)
     tasks_remaining = 3 - tasks_today
-    tasks_available = Tasks.objects.exclude(id__in=UserTasks.objects.filter(user=user).values_list('task_id', flat=True))[:tasks_remaining]
-
+    tasks_available = Tasks.objects.exclude(id__in=UserTasks.objects.filter(user=user).values_list('task_id', flat=True)).order_by('?')[:tasks_remaining]
+    tasks = list(tasks_available.values())
     user = {
-        'name': user.firstName,
+        'name': user.first_name,
         'email': user.email,
-        'earned': user.earned,
+        'balance': user.balance,
     }
     status = {
         'pending_tasks': pending_tasks_count,
@@ -47,7 +46,7 @@ def getuser(request=None, user=None):
         'total_tasks_taken': pending_tasks_count + completed_tasks_count,
     }
     if request is not None:
-        return JsonResponse({'success': True, 'user': user, 'status': status, 'tasks': tasks_available}, status=200)
+        return JsonResponse({'success': True, 'user': user, 'status': status, 'tasks': tasks}, status=200)
     return user, status, tasks_available
 
 def signup(request):
@@ -61,8 +60,8 @@ def signup(request):
     if User.objects.filter(email=email).exists():
         return JsonResponse({'error': True, 'message': 'Email already in use'}, status=400)
     user = User.objects.create(email=email, password=password)
-    user, status, tasks_available = getuser(user=user)
-    return JsonResponse({'success': True, 'user': user, 'status': status, 'tasks': tasks_available}, status=200)
+    user, status, tasks = getuser(user=user)
+    return JsonResponse({'success': True, 'user': user, 'status': status, 'tasks': tasks}, status=200)
 
 def login(request):
     if request.method != "POST":
@@ -75,12 +74,10 @@ def login(request):
     user = authenticate(email=email, password=password)
     if user is None:
         return JsonResponse({'error': True, 'message': 'Invalid email or password'}, status=400)
-    user, status, tasks_available = getuser(user=user)
-    return JsonResponse({'success': True, 'user': user, 'status': status, 'tasks': tasks_available}, status=200)
+    user, status, tasks = getuser(user=user)
+    return JsonResponse({'success': True, 'user': user, 'status': status, 'tasks': tasks}, status=200)
 
 def status(request):
-    if request.method != "POST":
-        return redirect('https://app.aiannotaion.site')
     user = request.user
     if user is None:
         return JsonResponse({'error': True, 'message': 'Login required'}, status=400)
@@ -94,8 +91,6 @@ def status(request):
     return JsonResponse({'success': True, 'tasks': tasks}, status=200)
 
 def tasks(request):
-    if request.method != "POST":
-        return redirect('https://app.aiannotaion.site')
     user = request.user
     if user is None:
         return JsonResponse({'error': True, 'message': 'Login required'}, status=400)
@@ -104,8 +99,9 @@ def tasks(request):
     if tasks_today >= 3:
         return JsonResponse({'error': True, 'message': 'Task limit of 3 per day reached'}, status=400)
     tasks_remaining = 3 - tasks_today
-    tasks_available = Tasks.objects.exclude(id__in=UserTasks.objects.filter(user=user).values_list('task_id', flat=True))[:tasks_remaining]
-    return JsonResponse({'success': True, 'tasks': tasks_available}, status=200)
+    tasks_available = Tasks.objects.exclude(id__in=UserTasks.objects.filter(user=user).values_list('task_id', flat=True)).order_by('?')[:tasks_remaining]
+    tasks = list(tasks_available.values())
+    return JsonResponse({'success': True, 'tasks': tasks}, status=200)
 
 def submit(request):
     if request.method != "POST":
