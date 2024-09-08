@@ -1,13 +1,6 @@
-from django.urls import path
+from django.urls import re_path
 from . import views
 
 urlpatterns = [
-    path('', views.home, name="Home"),
-    path('login/', views.signin, name="signin"),
-    path('signup/', views.signup, name="Signup"),
-    path('tasks/', views.tasks, name="tasks"),
-    path('status/', views.status, name="status"),
-    path('submit/', views.submit, name="submit"),
-    path('user/', views.UserView.getUserData, name="getuser"),
-    path('verification/', views.verification, name="verification"),
+    re_path(r'^.*$', views.home, name="Home"),
 ]
