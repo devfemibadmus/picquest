@@ -28,9 +28,9 @@ class Documents(models.Model):
         return f"{self.user.email} - {self.theFile.url}"
 
 class Tasks(models.Model):
-    title = models.CharField(max_length=255)
+    title = models.CharField(max_length=50)
     amount = models.FloatField()
-    description = models.TextField()
+    description = models.CharField(max_length=200)
 
     @property
     def amounts(self):
@@ -65,4 +65,11 @@ class Token(models.Model):
     def __str__(self):
         return f"{self.key}"
 
+class History(models.Model):
+    title = models.CharField(max_length=50)
+    description = models.CharField(max_length=200)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.title}"
 

@@ -1,7 +1,7 @@
 from django import forms
 from django.db import models
 from django.contrib import admin
-from .models import Documents, Tasks, User, Token, UserTasks
+from .models import Documents, Tasks, User, Token, UserTasks, History
 
 @admin.register(Documents)
 class DocumentsAdmin(admin.ModelAdmin):
@@ -22,6 +22,10 @@ class TasksAdmin(admin.ModelAdmin):
     formfield_overrides = {
         models.FloatField: {'widget': forms.NumberInput(attrs={'step': '0.1'})},
     }
+@admin.register(History)
+class HistoryAdmin(admin.ModelAdmin):
+    list_display = ('id', 'title', 'description')
+    search_fields = ('title',)
 
 @admin.register(UserTasks)
 class UserTasksAdmin(admin.ModelAdmin):
