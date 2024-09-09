@@ -1,622 +1,622 @@
 [
     {
-      "title": "Color Composition Task",
+      "title": "Color Composition",
       "description": "Take a photo that includes the colors red, green, and purple. Make sure each color is distinctly visible."
     },
     {
-      "title": "Object Search Task",
+      "title": "Object Search",
       "description": "Capture a photo with at least 3 different objects: a book, a cup, and a pen."
     },
     {
-      "title": "Symmetry Task",
+      "title": "Symmetry",
       "description": "Take a photo of an object or scene that is symmetrical (e.g., a mirror, a symmetrical building)."
     },
     {
-      "title": "Nature Spotting Task",
+      "title": "Nature Spotting",
       "description": "Capture a photo that contains at least one tree, one flower, and one animal."
     },
     {
-      "title": "Pattern Recognition Task",
+      "title": "Pattern Recognition",
       "description": "Find and photograph a repeating pattern (e.g., tiles, a brick wall, or patterned fabric)."
     },
     {
-      "title": "Emotional Scene Task",
+      "title": "Emotional Scene",
       "description": "Take a photo of a scene that conveys happiness (e.g., people smiling, a joyful event)."
     },
     {
-      "title": "Shadow and Light Task",
+      "title": "Shadow and Light",
       "description": "Capture an image that contrasts shadows and light (e.g., sunlight filtering through blinds)."
     },
     {
-      "title": "Object by Size Task",
+      "title": "Object by Size",
       "description": "Take a photo where the main object is larger than 10 cm but smaller than 1 meter (e.g., a medium-sized object like a chair or plant)."
     },
     {
-      "title": "Texture Identification Task",
+      "title": "Texture Identification",
       "description": "Photograph an object with a rough texture and another with a smooth texture."
     },
     {
-      "title": "Scene Composition Task",
+      "title": "Scene Composition",
       "description": "Capture a photo of a well-balanced composition, including one large object and two small objects, all evenly spaced."
     },
     {
-      "title": "Time of Day Task",
+      "title": "Time of Day",
       "description": "Take a photo at sunrise or sunset, showcasing the unique lighting conditions."
     },
     {
-      "title": "Reflection Task",
+      "title": "Reflection",
       "description": "Photograph an object and its reflection in a mirror or water surface."
     },
     {
-      "title": "Food Photography Task",
+      "title": "Food Photography",
       "description": "Take a photo of a well-presented meal, making sure to capture the details and colors of the food."
     },
     {
-      "title": "Close-Up Detail Task",
+      "title": "Close-Up Detail",
       "description": "Capture a macro shot of a small object (e.g., a flower, an insect) to showcase its details."
     },
     {
-      "title": "Motion Blur Task",
+      "title": "Motion Blur",
       "description": "Take a photo of a moving object with intentional motion blur (e.g., a car, a running person)."
     },
     {
-      "title": "Leading Lines Task",
+      "title": "Leading Lines",
       "description": "Photograph a scene where leading lines guide the viewer's eye through the image (e.g., roads, railways)."
     },
     {
-      "title": "Silhouette Task",
+      "title": "Silhouette",
       "description": "Capture a silhouette of an object or person against a bright background, like a sunset."
     },
     {
-      "title": "Depth of Field Task",
+      "title": "Depth of Field",
       "description": "Take a photo that demonstrates a shallow depth of field, where one object is in focus and the background is blurred."
     },
     {
-      "title": "Monochrome Task",
+      "title": "Monochrome",
       "description": "Take a black and white photo that emphasizes contrast and texture."
     },
     {
-      "title": "Framing Task",
+      "title": "Framing",
       "description": "Capture an image where the subject is framed by other objects in the scene (e.g., a person framed by a doorway)."
     },
     {
-      "title": "Geometric Shapes Task",
+      "title": "Geometric Shapes",
       "description": "Photograph a scene that includes geometric shapes, such as circles, triangles, or squares."
     },
     {
-      "title": "Low Angle Task",
+      "title": "Low Angle",
       "description": "Capture a photo from a low angle, looking up at the subject (e.g., a building, a person)."
     },
     {
-      "title": "High Angle Task",
+      "title": "High Angle",
       "description": "Take a photo from a high angle, looking down on the subject (e.g., a table setup, a crowd of people)."
     },
     {
-      "title": "Candid Photography Task",
+      "title": "Candid Photography",
       "description": "Capture a candid moment of people interacting naturally, without posing."
     },
     {
-      "title": "Night Photography Task",
+      "title": "Night Photography",
       "description": "Take a photo of a scene at night, using long exposure to capture light sources like street lamps or stars."
     },
     {
-      "title": "Abstract Photography Task",
+      "title": "Abstract Photography",
       "description": "Capture an abstract photo where the subject is not immediately recognizable, focusing on color, texture, or patterns."
     },
     {
-      "title": "Street Photography Task",
+      "title": "Street Photography",
       "description": "Take a photo that captures a moment in everyday life on the street."
     },
     {
-      "title": "Minimalism Task",
+      "title": "Minimalism",
       "description": "Photograph a simple composition with minimal objects or details, emphasizing negative space."
     },
     {
-      "title": "Golden Hour Task",
+      "title": "Golden Hour",
       "description": "Capture a photo during the golden hour (shortly after sunrise or before sunset), taking advantage of the warm light."
     },
     {
-      "title": "Forced Perspective Task",
+      "title": "Forced Perspective",
       "description": "Create a photo where objects appear to be different sizes or distances due to forced perspective (e.g., making a person appear to hold a distant object)."
     },
     {
-      "title": "Reflections in Water Task",
+      "title": "Reflections in Water",
       "description": "Photograph reflections in a body of water, such as a lake or puddle."
     },
     {
-      "title": "Weather Photography Task",
+      "title": "Weather Photography",
       "description": "Capture an image that represents the current weather, such as rain, fog, or snow."
     },
     {
-      "title": "Contrasting Textures Task",
+      "title": "Contrasting Textures",
       "description": "Photograph two or more objects with distinctly different textures (e.g., rough wood next to smooth glass)."
     },
     {
-      "title": "Architectural Detail Task",
+      "title": "Architectural Detail",
       "description": "Capture a photo focusing on the details of a building's architecture, such as windows, doors, or ornamental designs."
     },
     {
-      "title": "Shadow Play Task",
+      "title": "Shadow Play",
       "description": "Take a photo that creatively uses shadows to enhance the image."
     },
     {
-      "title": "Color Contrast Task",
+      "title": "Color Contrast",
       "description": "Photograph a scene with high color contrast, such as complementary colors (e.g., blue and orange)."
     },
     {
-      "title": "Repetition Task",
+      "title": "Repetition",
       "description": "Capture a scene that features repeating elements, such as a row of columns or identical objects."
     },
     {
-      "title": "Street Art Task",
+      "title": "Street Art",
       "description": "Photograph a piece of street art or graffiti in an urban setting."
     },
     {
-      "title": "Bird's Eye View Task",
+      "title": "Bird's Eye View",
       "description": "Take a photo from a bird's eye view, looking straight down on a scene."
     },
     {
-      "title": "In Motion Task",
+      "title": "In Motion",
       "description": "Capture an action shot of something in motion, such as a car driving by or a person running."
     },
     {
-      "title": "Golden Ratio Task",
+      "title": "Golden Ratio",
       "description": "Compose a photo using the golden ratio for balanced proportions."
     },
     {
-      "title": "Mirroring Task",
+      "title": "Mirroring",
       "description": "Photograph a scene that has a natural or artificial mirror effect, such as a lake reflecting mountains."
     },
     {
-      "title": "Still Life Task",
+      "title": "Still Life",
       "description": "Arrange objects on a table or surface and photograph them as a still life composition."
     },
     {
-      "title": "Multiple Exposure Task",
+      "title": "Multiple Exposure",
       "description": "Take a photo that blends multiple exposures, either digitally or in-camera, to create a layered effect."
     },
     {
-      "title": "Color Blocking Task",
+      "title": "Color Blocking",
       "description": "Photograph a scene where large blocks of color dominate the composition."
     },
     {
-      "title": "Close-Up Nature Task",
+      "title": "Close-Up Nature",
       "description": "Take a close-up photo of a plant, flower, or natural object, highlighting the details."
     },
     {
-      "title": "Reflections in Glass Task",
+      "title": "Reflections in Glass",
       "description": "Capture reflections in glass surfaces, such as windows or mirrors, to create interesting visual effects."
     },
     {
-      "title": "Portrait with Background Story Task",
+      "title": "Portrait with Background Story",
       "description": "Photograph a person in a way that the background adds context to their story or situation."
     },
     {
-      "title": "Movement in Water Task",
+      "title": "Movement in Water",
       "description": "Capture the movement of water, such as waves or a waterfall, using a slow shutter speed."
     },
     {
-      "title": "Backlight Task",
+      "title": "Backlight",
       "description": "Photograph a subject with strong backlighting, such as the sun behind a person or object."
     },
     {
-      "title": "Warm vs Cool Colors Task",
+      "title": "Warm vs Cool Colors",
       "description": "Capture a photo that contrasts warm and cool colors in the same frame (e.g., warm orange and cool blue)."
     },
     {
-      "title": "Unique Perspective Task",
+      "title": "Unique Perspective",
       "description": "Take a photo from an unusual or creative angle that changes the viewer's perspective on the subject."
     },
     {
-      "title": "Window Light Task",
+      "title": "Window Light",
       "description": "Photograph a subject using only the natural light coming from a window."
     },
     {
-      "title": "Dual Focus Task",
+      "title": "Dual Focus",
       "description": "Capture a photo where two subjects are in focus, one in the foreground and one in the background, using a large depth of field."
     },
     {
-      "title": "Golden Hour Portrait Task",
+      "title": "Golden Hour Portrait",
       "description": "Take a portrait during the golden hour, capturing the subject with warm, soft lighting."
     },
     {
-      "title": "Reflections in Puddles Task",
+      "title": "Reflections in Puddles",
       "description": "Capture an image that uses puddles to reflect an object or scene, creating an interesting visual effect."
     },
     {
-      "title": "High Contrast Task",
+      "title": "High Contrast",
       "description": "Photograph a scene that has a strong contrast between light and dark areas, such as shadows on a wall."
     },
     {
-      "title": "Silhouette Portrait Task",
+      "title": "Silhouette Portrait",
       "description": "Photograph a person as a silhouette against a bright background, such as the sky during sunset."
     },
     {
-      "title": "Frame Within a Frame Task",
+      "title": "Frame Within a Frame",
       "description": "Take a photo where the subject is framed by another element in the scene, like a window, doorway, or archway."
     },
     {
-      "title": "Reflection Selfie Task",
+      "title": "Reflection Selfie",
       "description": "Capture a self-portrait using reflections from glass, mirrors, or water."
     },
     {
-      "title": "Texture Play Task",
+      "title": "Texture Play",
       "description": "Photograph an object or scene where different textures create an interesting contrast."
     },
     {
-      "title": "Dynamic Movement Task",
+      "title": "Dynamic Movement",
       "description": "Capture an image that conveys a sense of dynamic movement, such as dancers, runners, or water in motion."
     },
     {
-      "title": "Natural Framing Task",
+      "title": "Natural Framing",
       "description": "Use elements of nature, such as tree branches or flowers, to frame your subject in the photo."
     },
     {
-      "title": "Close-Up of Everyday Object Task",
+      "title": "Close-Up of Everyday Object",
       "description": "Take a close-up photo of an everyday object, such as a key, pen, or cup, to reveal details often overlooked."
     },
     {
-      "title": "Color Harmony Task",
+      "title": "Color Harmony",
       "description": "Capture a photo that uses harmonious colors, such as shades of the same color family or complementary colors."
     },
     {
-      "title": "Diagonal Lines Task",
+      "title": "Diagonal Lines",
       "description": "Photograph a scene where diagonal lines lead the viewer’s eye through the composition."
     },
     {
-      "title": "Shape Contrast Task",
+      "title": "Shape Contrast",
       "description": "Capture an image that contrasts different shapes, such as circular objects against rectangular backgrounds."
     },
     {
-      "title": "Low Light Photography Task",
+      "title": "Low Light Photography",
       "description": "Take a photo in low light conditions, using available light sources like candles or street lamps."
     },
     {
-      "title": "Reflections in Sunglasses Task",
+      "title": "Reflections in Sunglasses",
       "description": "Capture a reflection in someone’s sunglasses, showing a different perspective of the surrounding scene."
     },
     {
-      "title": "Soft Focus Task",
+      "title": "Soft Focus",
       "description": "Create an image with a soft focus effect, where the subject is slightly blurred for a dreamy look."
     },
     {
-      "title": "Street Vendor Task",
+      "title": "Street Vendor",
       "description": "Photograph a street vendor in action, capturing the details of their work and environment."
     },
     {
-      "title": "Portrait with Motion Task",
+      "title": "Portrait with Motion",
       "description": "Take a portrait that includes motion blur, such as a person moving their hair or clothes in the wind."
     },
     {
-      "title": "Sunburst Task",
+      "title": "Sunburst",
       "description": "Capture a photo that includes a sunburst effect, where sunlight shines through gaps in objects like trees or buildings."
     },
     {
-      "title": "Contrasting Shadows Task",
+      "title": "Contrasting Shadows",
       "description": "Photograph a scene that emphasizes the contrast between light and shadows, such as the shadow of a tree on a wall."
     },
     {
-      "title": "Monochromatic Color Task",
+      "title": "Monochromatic Color",
       "description": "Take a photo where the entire composition is dominated by different shades of the same color."
     },
     {
-      "title": "Birds in Flight Task",
+      "title": "Birds in Flight",
       "description": "Capture a photo of birds in flight, freezing the motion of their wings in mid-air."
     },
     {
-      "title": "Underground Scene Task",
+      "title": "Underground Scene",
       "description": "Photograph an underground or low-light environment, such as a subway station, capturing the mood and atmosphere."
     },
     {
-      "title": "Dynamic Architecture Task",
+      "title": "Dynamic Architecture",
       "description": "Take a photo of modern or dynamic architecture, focusing on sharp angles, curves, and lines."
     },
     {
-      "title": "Reflection in Metal Task",
+      "title": "Reflection in Metal",
       "description": "Photograph reflections in a metal surface, such as a shiny car or sculpture."
     },
     {
-      "title": "Warm Light Task",
+      "title": "Warm Light",
       "description": "Capture a scene bathed in warm light, such as late afternoon sunlight or candlelight."
     },
     {
-      "title": "Splash of Water Task",
+      "title": "Splash of Water",
       "description": "Photograph water splashing or droplets in motion, such as a glass being filled or water falling from a fountain."
     },
     {
-      "title": "Opposing Directions Task",
+      "title": "Opposing Directions",
       "description": "Capture a photo where subjects are moving in opposing directions, such as two people walking away from each other."
     },
     {
-      "title": "Emphasizing Lines Task",
+      "title": "Emphasizing Lines",
       "description": "Photograph a scene where lines dominate the composition, such as the lines of a bridge or road."
     },
     {
-      "title": "Dramatic Sky Task",
+      "title": "Dramatic Sky",
       "description": "Capture a photo of a dramatic sky, emphasizing clouds, sunset colors, or storms."
     },
     {
-      "title": "Water Reflection Portrait Task",
+      "title": "Water Reflection Portrait",
       "description": "Photograph a person whose reflection is visible in a body of water, such as a pond or lake."
     },
     {
-      "title": "Dual Exposure Effect Task",
+      "title": "Dual Exposure Effect",
       "description": "Create a photo that mimics a dual exposure effect, blending two images together either in-camera or digitally."
     },
     {
-      "title": "Texture in Nature Task",
+      "title": "Texture in Nature",
       "description": "Capture a close-up of natural textures, such as tree bark, leaves, or rocks."
     },
     {
-      "title": "Unusual Shadow Task",
+      "title": "Unusual Shadow",
       "description": "Take a photo that features an unusual or unexpected shadow, such as a shadow cast by an object with a unique shape."
     },
     {
-      "title": "Overexposure Task",
+      "title": "Overexposure",
       "description": "Intentionally overexpose your photo to create a bright, washed-out effect for artistic purposes."
     },
     {
-      "title": "Long Exposure Light Trails Task",
+      "title": "Long Exposure Light Trails",
       "description": "Capture light trails from moving cars or other sources using a long exposure."
     },
     {
-      "title": "Cityscape at Night Task",
+      "title": "Cityscape at Night",
       "description": "Photograph a cityscape at night, highlighting the lights and architecture of the urban environment."
     },
     {
-      "title": "Fire or Candlelight Task",
+      "title": "Fire or Candlelight",
       "description": "Capture an image of fire or candlelight, emphasizing the movement and warm glow of the flames."
     },
     {
-      "title": "Mirrored Symmetry Task",
+      "title": "Mirrored Symmetry",
       "description": "Photograph a scene that has perfect mirrored symmetry, either naturally or through a reflection."
     },
     {
-      "title": "Person and Architecture Task",
+      "title": "Person and Architecture",
       "description": "Photograph a person interacting with architecture, using the buildings as a background or framing element."
     },
     {
-      "title": "Reflective Surface Task",
+      "title": "Reflective Surface",
       "description": "Capture an image where reflective surfaces, such as a mirror or glass, create a doubling effect of the subject."
     },
     {
-      "title": "Contrasting Elements Task",
+      "title": "Contrasting Elements",
       "description": "Photograph a scene where two contrasting elements are side by side, such as old and new buildings."
     },
     {
-      "title": "Golden Ratio Portrait Task",
+      "title": "Golden Ratio Portrait",
       "description": "Compose a portrait using the golden ratio to guide the placement of the subject and background elements."
     },
     {
-      "title": "Neon Light Task",
+      "title": "Neon Light",
       "description": "Capture an image of neon lights at night, focusing on the vibrant colors and glow."
     },
     {
-      "title": "Reflection in Eyes Task",
+      "title": "Reflection in Eyes",
       "description": "Photograph a close-up portrait where the reflection of the surroundings is visible in the subject's eyes."
     },
     {
-      "title": "Natural Leading Lines Task",
+      "title": "Natural Leading Lines",
       "description": "Capture an image where natural elements, like rivers or tree branches, lead the viewer's eye through the composition."
     },
     {
-      "title": "Opposing Colors Task",
+      "title": "Opposing Colors",
       "description": "Take a photo that highlights two opposing colors, such as blue and orange, or red and green."
     },
     {
-      "title": "Selective Color Task",
+      "title": "Selective Color",
       "description": "Create an image where most of the scene is black and white, but one color stands out vividly."
     },
     {
-      "title": "Reflections in Water Droplets Task",
+      "title": "Reflections in Water Droplets",
       "description": "Photograph tiny water droplets that reflect the surrounding scene, such as on leaves or glass."
     },
     {
-      "title": "Contrasting Moods Task",
+      "title": "Contrasting Moods",
       "description": "Capture a photo that conveys two contrasting moods, such as happiness and sadness, in the same frame."
     },
     {
-      "title": "Dynamic Duo Task",
+      "title": "Dynamic Duo",
       "description": "Take a photo of two objects or people that complement each other in an interesting way."
     },
     {
-      "title": "Street Lights and Shadows Task",
+      "title": "Street Lights and Shadows",
       "description": "Capture the interplay between street lights and shadows, creating a dramatic urban scene at night."
     },
     {
-      "title": "Symmetrical Buildings Task",
+      "title": "Symmetrical Buildings",
       "description": "Photograph a building that has perfect symmetry, focusing on its architectural balance."
     },
     {
-      "title": "Vibrant Urban Graffiti Task",
+      "title": "Vibrant Urban Graffiti",
       "description": "Capture vibrant urban graffiti that uses bold colors and intricate designs to convey artistic expression."
     },
     {
-      "title": "Perspective Shift Task",
+      "title": "Perspective Shift",
       "description": "Photograph a common object from an unusual angle, making it look abstract or unrecognizable."
     },
     {
-      "title": "Contrasting Textures Task",
+      "title": "Contrasting Textures",
       "description": "Take a photo that highlights contrasting textures, such as rough stone against smooth glass."
     },
     {
-      "title": "Motion Blur with Stillness Task",
+      "title": "Motion Blur with Stillness",
       "description": "Capture an image where one element is moving (creating motion blur) while another element remains still and sharp."
     },
     {
-      "title": "Colorful Street Markets Task",
+      "title": "Colorful Street Markets",
       "description": "Photograph a colorful street market, focusing on the vibrant colors of the goods being sold."
     },
     {
-      "title": "Backlit Silhouette Task",
+      "title": "Backlit Silhouette",
       "description": "Capture a backlit silhouette of a person or object, where the light source is directly behind the subject."
     },
     {
-      "title": "Play of Shadows Task",
+      "title": "Play of Shadows",
       "description": "Take a photo that plays with shadows and light to create interesting shapes and patterns."
     },
     {
-      "title": "Hidden Faces Task",
+      "title": "Hidden Faces",
       "description": "Photograph a scene that includes hidden or abstract faces, where the features are suggested by objects."
     },
     {
-      "title": "Night Sky Stars Task",
+      "title": "Night Sky Stars",
       "description": "Capture the night sky filled with stars, using long exposure to reveal the depth of the universe."
     },
     {
-      "title": "Portrait with Glass Reflections Task",
+      "title": "Portrait with Glass Reflections",
       "description": "Take a portrait where the subject is partially obscured by glass reflections, adding complexity to the image."
     },
     {
-      "title": "Colorful Sunset Reflection Task",
+      "title": "Colorful Sunset Reflection",
       "description": "Photograph a colorful sunset reflected on water or glass, creating a mirrored version of the scene."
     },
     {
-      "title": "Wide Angle Landscape Task",
+      "title": "Wide Angle Landscape",
       "description": "Capture a vast landscape using a wide-angle lens, emphasizing the expansiveness of the scene."
     },
     {
-      "title": "Minimalist Object Task",
+      "title": "Minimalist Object",
       "description": "Take a photo of a single object against a simple, uncluttered background, embracing minimalism."
     },
     {
-      "title": "Texture in Architecture Task",
+      "title": "Texture in Architecture",
       "description": "Photograph the texture of an architectural surface, such as brick, stone, or metal."
     },
     {
-      "title": "Movement and Stillness Task",
+      "title": "Movement and Stillness",
       "description": "Capture a scene where there is both movement and stillness, such as a moving car with still pedestrians."
     },
     {
-      "title": "Geometric Patterns Task",
+      "title": "Geometric Patterns",
       "description": "Take a photo of repeating geometric patterns, such as tiles, windows, or stairs."
     },
     {
-      "title": "Portrait with Dramatic Lighting Task",
+      "title": "Portrait with Dramatic Lighting",
       "description": "Capture a portrait using dramatic, directional lighting that emphasizes the contours of the face."
     },
     {
-      "title": "Vintage Filter Task",
+      "title": "Vintage Filter",
       "description": "Take a photo that looks vintage or retro, using filters or editing to replicate an old-fashioned style."
     },
     {
-      "title": "Color Pop Task",
+      "title": "Color Pop",
       "description": "Photograph a scene where one color stands out against a muted or monochrome background."
     },
     {
-      "title": "Backlit Plant Life Task",
+      "title": "Backlit Plant Life",
       "description": "Capture a plant or leaf with backlighting, highlighting its delicate structure and veins."
     },
     {
-      "title": "Blurry Bokeh Lights Task",
+      "title": "Blurry Bokeh Lights",
       "description": "Photograph blurry bokeh lights in the background, creating a dreamy, out-of-focus effect."
     },
     {
-      "title": "Stormy Weather Task",
+      "title": "Stormy Weather",
       "description": "Take a dramatic photo of stormy weather, such as dark clouds, rain, or lightning in the distance."
     },
     {
-      "title": "Reflection in a Puddle Task",
+      "title": "Reflection in a Puddle",
       "description": "Capture an interesting scene reflected in a puddle of water, turning the ordinary into the extraordinary."
     },
     {
-      "title": "Hands in Action Task",
+      "title": "Hands in Action",
       "description": "Photograph hands engaged in an action, such as playing an instrument, cooking, or creating art."
     },
     {
-      "title": "Foggy Morning Scene Task",
+      "title": "Foggy Morning Scene",
       "description": "Capture a foggy morning scene, emphasizing the misty, ethereal atmosphere."
     },
     {
-      "title": "Contrasting Lights Task",
+      "title": "Contrasting Lights",
       "description": "Photograph a scene that contrasts warm and cool light sources, creating a dynamic interplay of colors."
     },
     {
-      "title": "Long Shadows Task",
+      "title": "Long Shadows",
       "description": "Capture long shadows cast by the setting or rising sun, adding depth and interest to the composition."
     },
     {
-      "title": "Negative Space Task",
+      "title": "Negative Space",
       "description": "Use negative space effectively in a photo, leaving much of the composition empty to emphasize the subject."
     },
     {
-      "title": "Reflections in Store Windows Task",
+      "title": "Reflections in Store Windows",
       "description": "Capture reflections in a store window, blending the outside world with what's on display inside."
     },
     {
-      "title": "Architecture and Nature Task",
+      "title": "Architecture and Nature",
       "description": "Photograph the contrast between architecture and nature, such as a building surrounded by trees."
     },
     {
-      "title": "Overexposed Portrait Task",
+      "title": "Overexposed Portrait",
       "description": "Intentionally overexpose a portrait to create a bright, washed-out effect that focuses on the subject’s expression."
     },
     {
-      "title": "Tiny World Task",
+      "title": "Tiny World",
       "description": "Create a tiny world effect by photographing miniature objects as if they were life-sized."
     },
     {
-      "title": "Street Art Close-Up Task",
+      "title": "Street Art Close-Up",
       "description": "Capture a close-up of street art, emphasizing the details and textures of the paint or medium used."
     },
     {
-      "title": "Dramatic Sunset Silhouette Task",
+      "title": "Dramatic Sunset Silhouette",
       "description": "Photograph a dramatic sunset silhouette, where the subject is dark against a colorful, glowing sky."
     },
     {
-      "title": "Playful Reflection Task",
+      "title": "Playful Reflection",
       "description": "Take a playful photo where reflections distort reality, creating a fun or surreal effect."
     },
     {
-      "title": "Colorful Urban Mural Task",
+      "title": "Colorful Urban Mural",
       "description": "Photograph a colorful mural in an urban environment, focusing on its artistic expression."
     },
     {
-      "title": "People in Motion Task",
+      "title": "People in Motion",
       "description": "Capture people in motion, such as walking, running, or dancing, with a sense of movement in the photo."
     },
     {
-      "title": "Harsh Light Shadows Task",
+      "title": "Harsh Light Shadows",
       "description": "Use harsh light to create strong shadows and high contrast in a photo, emphasizing shapes and lines."
     },
     {
-      "title": "Bicycle in the Rain Task",
+      "title": "Bicycle in the Rain",
       "description": "Photograph a bicycle in the rain, with droplets or reflections adding interest to the scene."
     },
     {
-      "title": "Abstract Architecture Task",
+      "title": "Abstract Architecture",
       "description": "Take an abstract photo of architecture, focusing on patterns, lines, and unusual angles."
     },
     {
-      "title": "Close-Up of Insect Task",
+      "title": "Close-Up of Insect",
       "description": "Capture a close-up photo of an insect, emphasizing its details, such as wings, legs, and eyes."
     },
     {
-      "title": "Colorful Balloons Task",
+      "title": "Colorful Balloons",
       "description": "Photograph colorful balloons against a contrasting background, emphasizing their brightness and vibrancy."
     },
     {
-      "title": "Overlapping Objects Task",
+      "title": "Overlapping Objects",
       "description": "Capture a scene where objects overlap, creating an interesting composition of shapes and colors."
     },
     {
-      "title": "Busy City Street Task",
+      "title": "Busy City Street",
       "description": "Photograph a busy city street, capturing the hustle and bustle of people, vehicles, and activity."
     },
     {
-      "title": "Contrasting Colors in Nature Task",
+      "title": "Contrasting Colors in Nature",
       "description": "Capture contrasting colors in nature, such as a bright flower against a green backdrop."
     },
     {
-      "title": "Reflections in a Car Window Task",
+      "title": "Reflections in a Car Window",
       "description": "Photograph reflections in a car window, showing both the interior and the world outside."
     },
     {
-      "title": "Close-Up of a Flower Task",
+      "title": "Close-Up of a Flower",
       "description": "Capture a close-up of a flower, focusing on its petals, colors, and intricate details."
     },
     {
-      "title": "Dramatic Black and White Task",
+      "title": "Dramatic Black and White",
       "description": "Create a dramatic black-and-white photo that emphasizes contrast, light, and shadow."
     }
   ]
