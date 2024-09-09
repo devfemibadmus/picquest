@@ -6,6 +6,7 @@ from django.contrib.auth.models import AbstractUser
 class User(AbstractUser):
     email = models.EmailField(unique=True)
     balance = models.IntegerField(default=0)
+    daily_task = models.IntegerField(default=3)
     is_verify = models.BooleanField(default=False)
 
     USERNAME_FIELD = 'email'
@@ -48,7 +49,7 @@ class UserTasks(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     task = models.ForeignKey(Tasks, on_delete=models.CASCADE)
     photo = models.ImageField(upload_to="photos/")
-    status = models.CharField(max_length=15, choices=STATUS_CHOICES, default='pending')
+    status = models.CharField(max_length=15, choices=STATUS_CHOICES, default='pendingTasks')
 
     def __str__(self):
         return f"{self.task.title}"
