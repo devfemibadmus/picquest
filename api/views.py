@@ -63,7 +63,7 @@ class UserView:
         user = self.user
         today = timezone.now().date()
         tasks_today = UserTasks.objects.filter(user=user, created_at__date=today).count()
-        tasks_remaining = 3 - tasks_today
+        tasks_remaining = user.daily_task - tasks_today
         user_task_ids = UserTasks.objects.filter(user=self.user).values_list('task_id', flat=True)
         tasks_available = Tasks.objects.exclude(id__in=user_task_ids).order_by('?')[:tasks_remaining]
         tasks = list(tasks_available.values())
@@ -136,18 +136,17 @@ def tasks(request):
 def submit(request):
     if request.method != "POST":
         return redirect('https://app.aiannotaion.site')
-    task_id = request.POST.get('task_id')
+    task_id = request.POST.get('taskId')
     photo_file = request.FILES.get('photo')
-    if not request.user.is_authenticated:
-        return JsonResponse({'error': True, 'message': 'Login required'}, status=400)
-    user = request.user
-    if not user.is_verify:
-        return JsonResponse({'error': True, 'message': 'Please verify your account first'}, status=400)
-    if photo_file is None or task_id is None or not Tasks.objects.filter(id=task_id).exists():
-        return JsonResponse({'error': True, 'message': 'Invalid Data Parse'}, status=400)
+    token_key = request.POST.get('token')
+    if token_key is None or not Token.objects.filter(key=token_key).exists():
+        return JsonResponse({'error': True, 'message': 'Logout and try again'}, status=400)
+    if photo_file is None or task_id is None:
+        return JsonResponse({'error': True, 'message': 'Invalid data, try again'}, status=400)
+    user = Token.objects.get(key=token_key).user
     tasks = Tasks.objects.get(id=task_id)
     UserTasks.objects.create(user=user, task=tasks, created_at=timezone.now, photo=photo_file)
-    return JsonResponse({'success': True}, status=200)
+    return JsonResponse({'success': True, 'message': 'Task submitted successfully'}, status=200)
 
 @csrf_exempt
 def verification(request):
