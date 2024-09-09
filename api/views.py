@@ -40,7 +40,7 @@ class UserView:
     def getUserInfo(self):
         user = self.user    
         user_info = {
-            'name': user.first_name,
+            'name': f'{user.first_name} {user.last_name}',
             'email': user.email,
             'balance': user.balance,
             'isVerify': user.is_verify,
