@@ -25,13 +25,7 @@ INSTALLED_APPS = [
     'api',
 ]
 
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:50740",
-]
-
-CSRF_TRUSTED_ORIGINS = [
-    "http://localhost:50740",
-]
+CORS_ALLOW_ALL_ORIGINS = True
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
