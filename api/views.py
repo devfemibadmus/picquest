@@ -1,4 +1,4 @@
-import json
+import json, requests
 from datetime import datetime
 from django.utils import timezone
 from django.http import JsonResponse
@@ -81,7 +81,7 @@ class UserView:
         if request.method != "POST":
             return redirect('https://app.aiannotaion.site')
         token_key = request.POST.get('token')
-        print(token_key)
+        print(f'token_key: {token_key}')
         try:
             token = Token.objects.get(key=token_key)
             user = token.user
@@ -176,4 +176,47 @@ def verification(request):
     user.is_verify = True
     user.save()
     return JsonResponse({'success': True}, status=200)
+
+@csrf_exempt
+def bankList(request):
+    url = "https://api.paystack.co/bank"
+    if request.method != "POST":
+        return redirect('https://app.aiannotaion.site')
+    token_key = request.POST.get('token')
+    if token_key is None or not Token.objects.filter(key=token_key).exists():
+        return JsonResponse({'error': True, 'message': 'Invalid auth token'}, status=400)
+    headers = {
+        "Authorization": "Bearer "
+    }
+    response = requests.get(url, headers=headers)
+    data = response.json()
+    print(data['status'])
+    if data['status'] == True:
+        return JsonResponse({'success': True, 'data': data['data']}, status=200)
+    return JsonResponse({'error': True}, status=400)
+
+@csrf_exempt
+def bankResolve(request):
+    url = "https://api.paystack.co/bank/resolve"
+    if request.method != "POST":
+        return redirect('https://app.aiannotaion.site')
+    bank_code = request.POST.get('bank_code')
+    account_number = request.POST.get('account_number')
+    token_key = request.POST.get('token')
+    if token_key is None or not Token.objects.filter(key=token_key).exists():
+        return JsonResponse({'error': True, 'message': 'Invalid auth token'}, status=400)
+    if bank_code is None or account_number is None or len(str(account_number)) < 10:
+        return JsonResponse({'error': True, 'message': 'Invalid data parse'}, status=400)
+    params = {
+        "account_number": account_number,
+        "bank_code": bank_code
+    }
+    headers = {
+        "Authorization": "Bearer "
+    }
+    response = requests.get(url, headers=headers, params=params)
+    data = response.json()
+    if data['status'] == True:
+        return JsonResponse({'success': True, 'data': data['data']}, status=200)
+    return JsonResponse({'error': True}, status=400)
 
