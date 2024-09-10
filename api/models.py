@@ -66,6 +66,13 @@ class Token(models.Model):
         return f"{self.key}"
 
 class History(models.Model):
+    ACTION_CHOICES = [
+        ('debit', 'debit'),
+        ('credit', 'credit'),
+        ('pendingDebit', 'pendingDebit'),
+        ('pendingCredit', 'pendingCredit'),
+    ]
+    action = models.CharField(max_length=15, choices=ACTION_CHOICES)
     title = models.CharField(max_length=50)
     description = models.CharField(max_length=200)
     user = models.ForeignKey(User, on_delete=models.CASCADE)

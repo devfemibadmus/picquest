@@ -9,6 +9,7 @@ urlpatterns = [
     path('status/', views.status, name="status"),
     path('submit/', views.submit, name="submit"),
     path('history/', views.history, name="history"),
+    path('withdraw/', views.withdraw, name="withdraw"),
     path('bankList/', views.bankList, name="bankList"),
     path('bankResolve/', views.bankResolve, name="bankResolve"),
     path('getuser/', views.UserView.getUserData, name="getuser"),

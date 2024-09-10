@@ -37,7 +37,7 @@ class UserView:
             'email': user.email,
             'balance': user.balance,
             'isVerify': user.is_verify,
-        }                
+        }
         return user_info
 
     def getUserToken(self):
@@ -80,15 +80,20 @@ class UserView:
     def getUserData(request):
         if request.method != "POST":
             return redirect('https://app.aiannotaion.site')
+        refresh = request.POST.get('refresh')
         token_key = request.POST.get('token')
-        print(f'token_key: {token_key}')
         try:
             token = Token.objects.get(key=token_key)
             user = token.user
         except Token.DoesNotExist:
             return JsonResponse({'error': True, 'message': 'Invalid Authorization token'}, status=400)
-        user, status, tasks, token = UserView(user).getUser()
-        return JsonResponse({'success': True, 'user': user, 'status': status, 'tasks': tasks, 'token': token}, status=200)
+        user = UserView(user)
+        user_info = user.getUserInfo()
+        status = user.getUserStatus()
+        tasks = user.getUserTasks()
+        if(refresh=="false"):
+            token_key = user.getUserToken()
+        return JsonResponse({'success': True, 'user': user_info, 'status': status, 'tasks': tasks, 'token': token_key}, status=200)
 
 @csrf_exempt
 def signup(request):
@@ -164,17 +169,22 @@ def submit(request):
     return JsonResponse({'success': True, 'message': 'Task submitted successfully'}, status=200)
 
 @csrf_exempt
-def verification(request):
+def withdraw(request):
     if request.method != "POST":
         return redirect('https://app.aiannotaion.site')
-    if not request.user.is_authenticated:
-        return JsonResponse({'error': True, 'message': 'Login required'}, status=400)
-    user = request.user
-    form = VerificatonForm(request.POST)
-    if not form.is_valid():
-        return JsonResponse({'error': True, 'message': 'Invalid data'}, status=400)
-    user.is_verify = True
+    amount = request.POST.get('amount')
+    token_key = request.POST.get('token')
+    if token_key is None or not Token.objects.filter(key=token_key).exists():
+        return JsonResponse({'error': True, 'message': 'Logout and try again'}, status=400)
+    user = Token.objects.get(key=token_key).user
+    if amount is None or float(amount) > user.balance:
+        return JsonResponse({'error': True, 'message': 'Invalid data, try again'}, status=400)
+    description = ""
+    print(user.balance)
+    user.balance = user.balance - float(amount)
     user.save()
+    print(user.balance)
+    History.objects.create(user=user, title=amount, description=description, action='pendingDebit')
     return JsonResponse({'success': True}, status=200)
 
 @csrf_exempt
@@ -220,3 +230,16 @@ def bankResolve(request):
         return JsonResponse({'success': True, 'data': data['data']}, status=200)
     return JsonResponse({'error': True}, status=400)
 
+@csrf_exempt
+def verification(request):
+    if request.method != "POST":
+        return redirect('https://app.aiannotaion.site')
+    if not request.user.is_authenticated:
+        return JsonResponse({'error': True, 'message': 'Login required'}, status=400)
+    user = request.user
+    form = VerificatonForm(request.POST)
+    if not form.is_valid():
+        return JsonResponse({'error': True, 'message': 'Invalid data'}, status=400)
+    user.is_verify = True
+    user.save()
+    return JsonResponse({'success': True}, status=200)
