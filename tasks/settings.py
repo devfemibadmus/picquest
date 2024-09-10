@@ -26,11 +26,11 @@ INSTALLED_APPS = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:57113",
+    "http://localhost:50740",
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    "http://localhost:57113",
+    "http://localhost:50740",
 ]
 
 MIDDLEWARE = [
