@@ -79,7 +79,7 @@ class UserView:
     @staticmethod
     def getUserData(request):
         if request.method != "POST":
-            return redirect('https://app.aiannotaion.site')
+            return redirect('https://app.picquest.online')
         refresh = request.POST.get('refresh')
         token_key = request.POST.get('token')
         try:
@@ -98,7 +98,7 @@ class UserView:
 @csrf_exempt
 def signup(request):
     if request.method != "POST":
-        return redirect('https://app.aiannotaion.site')
+        return redirect('https://app.picquest.online')
     form = SignupForm(request.POST)
     if form.is_valid() != True:
         return JsonResponse({'error': True, 'message': 'Invalid data'}, status=400)
@@ -113,7 +113,7 @@ def signup(request):
 @csrf_exempt
 def signin(request):
     if request.method != "POST":
-        return redirect('https://app.aiannotaion.site')
+        return redirect('https://app.picquest.online')
     form = LoginForm(request.POST)
     if form.is_valid() != True:
         return JsonResponse({'error': True, 'message': 'Invalid data'}, status=200)
@@ -155,7 +155,7 @@ def history(request):
 @csrf_exempt
 def submit(request):
     if request.method != "POST":
-        return redirect('https://app.aiannotaion.site')
+        return redirect('https://app.picquest.online')
     task_id = request.POST.get('taskId')
     photo_file = request.FILES.get('photo')
     token_key = request.POST.get('token')
@@ -171,7 +171,7 @@ def submit(request):
 @csrf_exempt
 def withdraw(request):
     if request.method != "POST":
-        return redirect('https://app.aiannotaion.site')
+        return redirect('https://app.picquest.online')
     amount = request.POST.get('amount')
     token_key = request.POST.get('token')
     if token_key is None or not Token.objects.filter(key=token_key).exists():
@@ -188,7 +188,7 @@ def withdraw(request):
 def bankList(request):
     url = "https://api.paystack.co/bank"
     if request.method != "POST":
-        return redirect('https://app.aiannotaion.site')
+        return redirect('https://app.picquest.online')
     token_key = request.POST.get('token')
     if token_key is None or not Token.objects.filter(key=token_key).exists():
         return JsonResponse({'error': True, 'message': 'Invalid auth token'}, status=400)
@@ -206,7 +206,7 @@ def bankList(request):
 def bankResolve(request):
     url = "https://api.paystack.co/bank/resolve"
     if request.method != "POST":
-        return redirect('https://app.aiannotaion.site')
+        return redirect('https://app.picquest.online')
     bank_code = request.POST.get('bank_code')
     account_number = request.POST.get('account_number')
     token_key = request.POST.get('token')
@@ -230,7 +230,7 @@ def bankResolve(request):
 @csrf_exempt
 def verification(request):
     if request.method != "POST":
-        return redirect('https://app.aiannotaion.site')
+        return redirect('https://app.picquest.online')
     if not request.user.is_authenticated:
         return JsonResponse({'error': True, 'message': 'Login required'}, status=400)
     user = request.user
