@@ -24,8 +24,12 @@ class TasksAdmin(admin.ModelAdmin):
     }
 @admin.register(History)
 class HistoryAdmin(admin.ModelAdmin):
-    list_display = ('id', 'title', 'description')
-    search_fields = ('title',)
+    list_display = ('dates', 'action', 'user', 'formatted_amount', 'description')
+    search_fields = ('amount', 'user', 'dates')
+
+    def formatted_amount(self, obj):
+        return f"${obj.amount}"
+    formatted_amount.short_description = 'Amount'
 
 @admin.register(UserTasks)
 class UserTasksAdmin(admin.ModelAdmin):

@@ -179,12 +179,9 @@ def withdraw(request):
     user = Token.objects.get(key=token_key).user
     if amount is None or float(amount) > user.balance:
         return JsonResponse({'error': True, 'message': 'Invalid data, try again'}, status=400)
-    description = ""
-    print(user.balance)
     user.balance = user.balance - float(amount)
     user.save()
-    print(user.balance)
-    History.objects.create(user=user, title=amount, description=description, action='pendingDebit')
+    History.objects.create(user=user, amount=amount)
     return JsonResponse({'success': True}, status=200)
 
 @csrf_exempt
