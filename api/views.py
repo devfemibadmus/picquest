@@ -114,6 +114,7 @@ def signup(request):
     referral = None
     if referra is not None and User.objects.filter(email=referra).exists():
         referral = User.objects.get(email=referra)
+        History.objects.create(user=referral, amount='0.03', action='referral')
     if User.objects.filter(email=email).exists():
         return JsonResponse({'error': True, 'message': 'Email already in use'}, status=400)
     user = User.objects.create(email=email, password=password, first_name=fullName, referral=referral)

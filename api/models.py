@@ -80,6 +80,7 @@ class History(models.Model):
         ('Earned money has been credited to your account from completed tasks or job payments.', 'Earned money has been credited to your account from completed tasks or job payments.'),
         ('Your request to withdraw funds is currently under review and is awaiting approval for processing.', 'Your request to withdraw funds is currently under review and is awaiting approval for processing.'),
         ('Credit for the tasks you’ve completed is pending and will be added to your account once reviewed.', 'Credit for the tasks you’ve completed is pending and will be added to your account once reviewed.'),
+        ('Credit for Referral will be added to your account once the referred user verifies their account.', 'Credit for Referral will be added to your account once the referred user verifies their account.'),
     ]
     
     amount = models.CharField(max_length=50)
@@ -97,6 +98,9 @@ class History(models.Model):
             self.description = 'Your request to withdraw funds is currently under review and is awaiting approval for processing.'
         elif self.action == 'pending credit':
             self.description = 'Credit for the tasks you’ve completed is pending and will be added to your account once reviewed.'
+        elif self.action == 'referral':
+            self.action = 'pending credit'
+            self.description = 'Credit for Referral will be added to your account once the referred user verifies their account.'
         super().save(*args, **kwargs)
 
     def __str__(self):
