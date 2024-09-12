@@ -2,10 +2,9 @@ from django import forms
 
 class SignupForm(forms.Form):
     email = forms.EmailField()
-    last_name = forms.CharField()
-    first_name = forms.CharField()
+    fullName = forms.CharField()
     password = forms.CharField(widget=forms.PasswordInput)
-class LoginForm(forms.Form):
+class SigninForm(forms.Form):
     email = forms.EmailField()
     password = forms.CharField(widget=forms.PasswordInput)
 

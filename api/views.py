@@ -1,4 +1,4 @@
-import json, requests
+import json, requests, time
 from datetime import datetime
 from django.utils import timezone
 from django.http import JsonResponse
@@ -6,7 +6,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
-from .forms import LoginForm, SignupForm, VerificatonForm
+from .forms import SigninForm, SignupForm, VerificatonForm
 from .models import User, UserTasks, Documents, Token, Tasks, History
 
 
@@ -31,11 +31,15 @@ class UserView:
         return user_info, status, tasks, token
 
     def getUserInfo(self):
-        user = self.user    
+        user = self.user
+        referral = None
+        if user.referral is not None:
+            referral = user.referral.email
         user_info = {
-            'name': f'{user.first_name} {user.last_name}',
+            'name': user.first_name,
             'email': user.email,
             'balance': user.balance,
+            'referral': referral,
             'isVerify': user.is_verify,
         }
         return user_info
@@ -78,6 +82,7 @@ class UserView:
     @csrf_exempt
     @staticmethod
     def getUserData(request):
+        # time.sleep(5)
         if request.method != "POST":
             return redirect('https://app.picquest.online')
         refresh = request.POST.get('refresh')
@@ -104,9 +109,14 @@ def signup(request):
         return JsonResponse({'error': True, 'message': 'Invalid data'}, status=400)
     email = form.cleaned_data['email']
     password = form.cleaned_data['password']
+    fullName = form.cleaned_data['fullName']
+    referra = request.POST.get('referral')
+    referral = None
+    if referra is not None and User.objects.filter(email=referra).exists():
+        referral = User.objects.get(email=referra)
     if User.objects.filter(email=email).exists():
         return JsonResponse({'error': True, 'message': 'Email already in use'}, status=400)
-    user = User.objects.create(email=email, password=password)
+    user = User.objects.create(email=email, password=password, first_name=fullName, referral=referral)
     user, status, tasks, token = UserView(user).getUser()
     return JsonResponse({'success': True, 'user': user, 'status': status, 'tasks': tasks, 'token': token}, status=200)
 
@@ -114,7 +124,7 @@ def signup(request):
 def signin(request):
     if request.method != "POST":
         return redirect('https://app.picquest.online')
-    form = LoginForm(request.POST)
+    form = SigninForm(request.POST)
     if form.is_valid() != True:
         return JsonResponse({'error': True, 'message': 'Invalid data'}, status=200)
     email = form.cleaned_data['email']

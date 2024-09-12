@@ -22,6 +22,7 @@ class TasksAdmin(admin.ModelAdmin):
     formfield_overrides = {
         models.FloatField: {'widget': forms.NumberInput(attrs={'step': '0.1'})},
     }
+
 @admin.register(History)
 class HistoryAdmin(admin.ModelAdmin):
     list_display = ('dates', 'action', 'user', 'formatted_amount', 'description')
@@ -45,7 +46,7 @@ class UserTasksAdmin(admin.ModelAdmin):
 
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
-    list_display = ('id', 'email', 'balance', 'is_verify')
+    list_display = ('id', 'email', 'balance', 'is_verify', 'referral')
     search_fields = ('email',)
     list_filter = ('is_verify', 'balance')
     

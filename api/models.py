@@ -9,6 +9,7 @@ class User(AbstractUser):
     balance = models.IntegerField(default=0)
     daily_task = models.IntegerField(default=3)
     is_verify = models.BooleanField(default=False)
+    referral = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL, related_name='referred_users')
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['password'] 
