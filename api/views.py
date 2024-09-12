@@ -41,6 +41,7 @@ class UserView:
             'balance': user.balance,
             'referral': referral,
             'isVerify': user.is_verify,
+            'documentSubmitted': user.documentSubmitted,
         }
         return user_info
 
