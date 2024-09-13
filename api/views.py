@@ -7,9 +7,10 @@ from django.contrib.auth import login, authenticate
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from .forms import SigninForm, SignupForm, VerificatonForm
-from .models import User, UserTasks, Documents, Token, Tasks, History
+from .models import User, UserTasks, Documents, Token, Tasks, History, Payments
 
-
+sk_token = ''
+app_url = 'http://localhost:49900/'
 
 def load(request):
     json_file_path = 'tasks.json'
@@ -40,6 +41,7 @@ class UserView:
             'email': user.email,
             'balance': user.balance,
             'referral': referral,
+            'hasPaid': user.hasPaid,
             'isVerify': user.is_verify,
             'documentSubmitted': user.documentSubmitted,
         }
@@ -85,7 +87,7 @@ class UserView:
     def getUserData(request):
         # time.sleep(5)
         if request.method != "POST":
-            return redirect('https://app.picquest.online')
+            return redirect(app_url)
         refresh = request.POST.get('refresh')
         token_key = request.POST.get('token')
         try:
@@ -104,7 +106,7 @@ class UserView:
 @csrf_exempt
 def signup(request):
     if request.method != "POST":
-        return redirect('https://app.picquest.online')
+        return redirect(app_url)
     form = SignupForm(request.POST)
     if form.is_valid() != True:
         return JsonResponse({'error': True, 'message': 'Invalid data'}, status=400)
@@ -125,7 +127,7 @@ def signup(request):
 @csrf_exempt
 def signin(request):
     if request.method != "POST":
-        return redirect('https://app.picquest.online')
+        return redirect(app_url)
     form = SigninForm(request.POST)
     if form.is_valid() != True:
         return JsonResponse({'error': True, 'message': 'Invalid data'}, status=200)
@@ -165,9 +167,54 @@ def history(request):
     return JsonResponse({'success': True, 'history': history}, status=200)
 
 @csrf_exempt
+def payment(request):
+    token_key = request.POST.get('token')
+    if token_key is None or not Token.objects.filter(key=token_key).exists():
+        return JsonResponse({'error': True, 'message': 'Invalid Authorization token'}, status=400)
+    user = Token.objects.get(key=token_key).user
+    url = "https://api.paystack.co/transaction/initialize"
+    headers = {
+        "Authorization": f"Bearer {sk_token}",
+        "Content-Type": "application/json"
+    }
+    data = {"email": user.email, "amount": 2100, "callback_url": f"http://127.0.0.1:8000/api/v1/callback/{user.email}/"}
+    response = requests.post(url, headers=headers, json=data)
+    if response.status_code == 200:
+        data = response.json()
+        authorization_url = data['data']['authorization_url']
+        paymentName = authorization_url.split("/")[-1]
+        payment = Payments.objects.filter(user=user, reference__isnull=True).first()
+        if payment is None:
+            payment = Payments.objects.create(user=user, name=paymentName)
+        else:
+            payment.name = paymentName
+            payment.save()
+        return JsonResponse({'success': True, 'paymentUrl': authorization_url}, status=200)
+    return JsonResponse({'error': True}, status=400)
+
+@csrf_exempt
+def callback(request, email):
+    reference = request.GET.get('reference')
+    if reference and email:
+        url = f"https://api.paystack.co/transaction/verify/{reference}"
+        headers = {"Authorization": f"Bearer {sk_token}"}
+        response = requests.get(url, headers=headers)
+        if response.status_code == 200:
+            data = response.json()
+            if data['message'] == 'Verification successful':
+                user = User.objects.get(email=email)
+                user.hasPaid = True
+                user.save()
+                payment = Payments.objects.filter(user=user, reference__isnull=True).first()
+                payment.reference = reference
+                payment.save()
+            print(data['message'] == 'Verification successful')
+    return redirect(app_url)
+
+@csrf_exempt
 def submit(request):
     if request.method != "POST":
-        return redirect('https://app.picquest.online')
+        return redirect(app_url)
     task_id = request.POST.get('taskId')
     photo_file = request.FILES.get('photo')
     token_key = request.POST.get('token')
@@ -183,7 +230,7 @@ def submit(request):
 @csrf_exempt
 def withdraw(request):
     if request.method != "POST":
-        return redirect('https://app.picquest.online')
+        return redirect(app_url)
     amount = request.POST.get('amount')
     token_key = request.POST.get('token')
     if token_key is None or not Token.objects.filter(key=token_key).exists():
@@ -200,16 +247,13 @@ def withdraw(request):
 def bankList(request):
     url = "https://api.paystack.co/bank"
     if request.method != "POST":
-        return redirect('https://app.picquest.online')
+        return redirect(app_url)
     token_key = request.POST.get('token')
     if token_key is None or not Token.objects.filter(key=token_key).exists():
         return JsonResponse({'error': True, 'message': 'Invalid auth token'}, status=400)
-    headers = {
-        "Authorization": "Bearer "
-    }
+    headers = {"Authorization": f"Bearer {sk_token}"}
     response = requests.get(url, headers=headers)
     data = response.json()
-    print(data['status'])
     if data['status'] == True:
         return JsonResponse({'success': True, 'data': data['data']}, status=200)
     return JsonResponse({'error': True}, status=400)
@@ -218,7 +262,7 @@ def bankList(request):
 def bankResolve(request):
     url = "https://api.paystack.co/bank/resolve"
     if request.method != "POST":
-        return redirect('https://app.picquest.online')
+        return redirect(app_url)
     bank_code = request.POST.get('bank_code')
     account_number = request.POST.get('account_number')
     token_key = request.POST.get('token')
@@ -226,13 +270,8 @@ def bankResolve(request):
         return JsonResponse({'error': True, 'message': 'Invalid auth token'}, status=400)
     if bank_code is None or account_number is None or len(str(account_number)) < 10:
         return JsonResponse({'error': True, 'message': 'Invalid data parse'}, status=400)
-    params = {
-        "account_number": account_number,
-        "bank_code": bank_code
-    }
-    headers = {
-        "Authorization": "Bearer "
-    }
+    params = {"account_number": account_number, "bank_code": bank_code}
+    headers = {"Authorization": f"Bearer {sk_token}"}
     response = requests.get(url, headers=headers, params=params)
     data = response.json()
     if data['status'] == True:
@@ -242,13 +281,19 @@ def bankResolve(request):
 @csrf_exempt
 def verification(request):
     if request.method != "POST":
-        return redirect('https://app.picquest.online')
-    if not request.user.is_authenticated:
-        return JsonResponse({'error': True, 'message': 'Login required'}, status=400)
-    user = request.user
-    form = VerificatonForm(request.POST)
-    if not form.is_valid():
-        return JsonResponse({'error': True, 'message': 'Invalid data'}, status=400)
-    user.is_verify = True
+        return redirect(app_url)
+    token_key = request.POST.get('token')
+    govId = request.FILES.get('govId')
+    studentId = request.FILES.get('studentId')
+    if token_key is None or not Token.objects.filter(key=token_key).exists():
+        return JsonResponse({'error': True, 'message': 'Logout and try again'}, status=400)
+    if studentId is None or govId is None:
+        print("student: ", studentId is None)
+        print("gov: ", govId is None)
+        return JsonResponse({'error': True, 'message': 'Invalid data, try again'}, status=400)
+    user = Token.objects.get(key=token_key).user
+    Documents.objects.create(user=user, theFile=govId)
+    Documents.objects.create(user=user, theFile=studentId)
+    user.documentSubmitted = True
     user.save()
-    return JsonResponse({'success': True}, status=200)
+    return JsonResponse({'success': True, 'message': 'Document upload successfully'}, status=200)
