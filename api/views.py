@@ -2,11 +2,11 @@ import json, requests, time
 from datetime import datetime
 from django.utils import timezone
 from django.http import JsonResponse
+from .forms import SigninForm, SignupForm
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
-from .forms import SigninForm, SignupForm, VerificatonForm
 from .models import User, UserTasks, Documents, Token, Tasks, History, Payments
 
 sk_token = ''

@@ -7,9 +7,3 @@ class SignupForm(forms.Form):
 class SigninForm(forms.Form):
     email = forms.EmailField()
     password = forms.CharField(widget=forms.PasswordInput)
-
-class VerificatonForm(forms.Form):
-    theFile = forms.FileField()
-    bankName = forms.CharField()
-    accountNum = forms.CharField()
-    accountName = forms.CharField()
