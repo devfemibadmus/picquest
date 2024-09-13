@@ -85,62 +85,67 @@ class UserView:
     @csrf_exempt
     @staticmethod
     def getUserData(request):
-        # time.sleep(5)
         if request.method != "POST":
             return redirect(app_url)
         refresh = request.POST.get('refresh')
         token_key = request.POST.get('token')
-        try:
-            token = Token.objects.get(key=token_key)
-            user = token.user
-        except Token.DoesNotExist:
+        if token_key is None or refresh is None:
+            return JsonResponse({'error': True, 'message': 'Invalid data parse'}, status=400)
+        if not Token.objects.filter(key=token_key).exists():
             return JsonResponse({'error': True, 'message': 'Invalid Authorization token'}, status=400)
+        user = Token.objects.get(key=token_key).user
         user = UserView(user)
         user_info = user.getUserInfo()
         status = user.getUserStatus()
         tasks = user.getUserTasks()
-        if(refresh=="false"):
+        if(not refresh):
+            print(refresh)
             token_key = user.getUserToken()
         return JsonResponse({'success': True, 'user': user_info, 'status': status, 'tasks': tasks, 'token': token_key}, status=200)
+
 
 @csrf_exempt
 def signup(request):
     if request.method != "POST":
-        return redirect(app_url)
+        return JsonResponse({'error': True, 'message': 'Method not allowed'}, status=405)
     form = SignupForm(request.POST)
-    if form.is_valid() != True:
+    if not form.is_valid():
         return JsonResponse({'error': True, 'message': 'Invalid data'}, status=400)
     email = form.cleaned_data['email']
     password = form.cleaned_data['password']
     fullName = form.cleaned_data['fullName']
-    referra = request.POST.get('referral')
+    referral_email = request.POST.get('referral')
     referral = None
-    if referra is not None and User.objects.filter(email=referra).exists():
-        referral = User.objects.get(email=referra)
+    if referral_email and User.objects.filter(email=referral_email).exists():
+        referral = User.objects.get(email=referral_email)
         History.objects.create(user=referral, amount='0.03', action='referral')
     if User.objects.filter(email=email).exists():
         return JsonResponse({'error': True, 'message': 'Email already in use'}, status=400)
-    user = User.objects.create(email=email, password=password, first_name=fullName, referral=referral)
-    user, status, tasks, token = UserView(user).getUser()
-    return JsonResponse({'success': True, 'user': user, 'status': status, 'tasks': tasks, 'token': token}, status=200)
+    user = User(email=email, first_name=fullName, referral=referral)
+    user.set_password(password)
+    user.save()
+    user_data, status, tasks, token = UserView(user).getUser()
+    return JsonResponse({'success': True, 'user': user_data, 'status': status, 'tasks': tasks, 'token': token}, status=200)
 
 @csrf_exempt
 def signin(request):
     if request.method != "POST":
-        return redirect(app_url)
+        return JsonResponse({'error': True, 'message': 'Method not allowed'}, status=405)
     form = SigninForm(request.POST)
-    if form.is_valid() != True:
-        return JsonResponse({'error': True, 'message': 'Invalid data'}, status=200)
+    if not form.is_valid():
+        return JsonResponse({'error': True, 'message': 'Invalid data'}, status=400)
     email = form.cleaned_data['email']
     password = form.cleaned_data['password']
     user = authenticate(username=email, password=password)
     if user is None:
         return JsonResponse({'error': True, 'message': 'Invalid email or password'}, status=400)
-    user, status, tasks, token = UserView(user).getUser()
-    return JsonResponse({'success': True, 'user': user, 'status': status, 'tasks': tasks, 'token': token}, status=200)
+    user_data, status, tasks, token = UserView(user).getUser()
+    return JsonResponse({'success': True, 'user': user_data, 'status': status, 'tasks': tasks, 'token': token}, status=200)
 
 @csrf_exempt
 def status(request):
+    if request.method != "POST":
+        return JsonResponse({'error': True, 'message': 'Method not allowed'}, status=405)
     token_key = request.POST.get('token')
     if token_key is None or not Token.objects.filter(key=token_key).exists():
         return JsonResponse({'error': True, 'message': 'Invalid Authorization token'}, status=400)
@@ -150,6 +155,8 @@ def status(request):
 
 @csrf_exempt
 def tasks(request):
+    if request.method != "POST":
+        return JsonResponse({'error': True, 'message': 'Method not allowed'}, status=405)
     token_key = request.POST.get('token')
     if token_key is None or not Token.objects.filter(key=token_key).exists():
         return JsonResponse({'error': True, 'message': 'Invalid Authorization token'}, status=400)
@@ -159,6 +166,8 @@ def tasks(request):
 
 @csrf_exempt
 def history(request):
+    if request.method != "POST":
+        return JsonResponse({'error': True, 'message': 'Method not allowed'}, status=405)
     token_key = request.POST.get('token')
     if token_key is None or not Token.objects.filter(key=token_key).exists():
         return JsonResponse({'error': True, 'message': 'Invalid Authorization token'}, status=400)
@@ -168,15 +177,14 @@ def history(request):
 
 @csrf_exempt
 def payment(request):
+    if request.method != "POST":
+        return JsonResponse({'error': True, 'message': 'Method not allowed'}, status=405)
     token_key = request.POST.get('token')
     if token_key is None or not Token.objects.filter(key=token_key).exists():
         return JsonResponse({'error': True, 'message': 'Invalid Authorization token'}, status=400)
     user = Token.objects.get(key=token_key).user
     url = "https://api.paystack.co/transaction/initialize"
-    headers = {
-        "Authorization": f"Bearer {sk_token}",
-        "Content-Type": "application/json"
-    }
+    headers = {"Authorization": f"Bearer {sk_token}", "Content-Type": "application/json"}
     data = {"email": user.email, "amount": 2100, "callback_url": f"http://127.0.0.1:8000/api/v1/callback/{user.email}/"}
     response = requests.post(url, headers=headers, json=data)
     if response.status_code == 200:
@@ -208,13 +216,12 @@ def callback(request, email):
                 payment = Payments.objects.filter(user=user, reference__isnull=True).first()
                 payment.reference = reference
                 payment.save()
-            print(data['message'] == 'Verification successful')
     return redirect(app_url)
 
 @csrf_exempt
 def submit(request):
     if request.method != "POST":
-        return redirect(app_url)
+        return JsonResponse({'error': True, 'message': 'Method not allowed'}, status=405)
     task_id = request.POST.get('taskId')
     photo_file = request.FILES.get('photo')
     token_key = request.POST.get('token')
@@ -230,7 +237,7 @@ def submit(request):
 @csrf_exempt
 def withdraw(request):
     if request.method != "POST":
-        return redirect(app_url)
+        return JsonResponse({'error': True, 'message': 'Method not allowed'}, status=405)
     amount = request.POST.get('amount')
     token_key = request.POST.get('token')
     if token_key is None or not Token.objects.filter(key=token_key).exists():
@@ -247,7 +254,7 @@ def withdraw(request):
 def bankList(request):
     url = "https://api.paystack.co/bank"
     if request.method != "POST":
-        return redirect(app_url)
+        return JsonResponse({'error': True, 'message': 'Method not allowed'}, status=405)
     token_key = request.POST.get('token')
     if token_key is None or not Token.objects.filter(key=token_key).exists():
         return JsonResponse({'error': True, 'message': 'Invalid auth token'}, status=400)
@@ -262,7 +269,7 @@ def bankList(request):
 def bankResolve(request):
     url = "https://api.paystack.co/bank/resolve"
     if request.method != "POST":
-        return redirect(app_url)
+        return JsonResponse({'error': True, 'message': 'Method not allowed'}, status=405)
     bank_code = request.POST.get('bank_code')
     account_number = request.POST.get('account_number')
     token_key = request.POST.get('token')
@@ -281,15 +288,13 @@ def bankResolve(request):
 @csrf_exempt
 def verification(request):
     if request.method != "POST":
-        return redirect(app_url)
+        return JsonResponse({'error': True, 'message': 'Method not allowed'}, status=405)
     token_key = request.POST.get('token')
     govId = request.FILES.get('govId')
     studentId = request.FILES.get('studentId')
     if token_key is None or not Token.objects.filter(key=token_key).exists():
         return JsonResponse({'error': True, 'message': 'Logout and try again'}, status=400)
     if studentId is None or govId is None:
-        print("student: ", studentId is None)
-        print("gov: ", govId is None)
         return JsonResponse({'error': True, 'message': 'Invalid data, try again'}, status=400)
     user = Token.objects.get(key=token_key).user
     Documents.objects.create(user=user, theFile=govId)
