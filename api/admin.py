@@ -1,7 +1,7 @@
 from django import forms
 from django.db import models
 from django.contrib import admin
-from .models import Documents, Tasks, User, Token, UserTasks, History
+from .models import Documents, Tasks, User, Token, UserTasks, History, Payments
 
 @admin.register(Documents)
 class DocumentsAdmin(admin.ModelAdmin):
@@ -49,7 +49,7 @@ class UserAdmin(admin.ModelAdmin):
     list_display = ('id', 'email', 'balance', 'is_verify', 'referral', 'documentSubmitted')
     search_fields = ('email',)
     list_filter = ('is_verify', 'documentSubmitted')
-    
+
 @admin.register(Token)
 class TokenAdmin(admin.ModelAdmin):
     list_display = ('key', 'user_email')
@@ -57,6 +57,17 @@ class TokenAdmin(admin.ModelAdmin):
 
     def user_email(self, obj):
         return obj.user.email
+
+@admin.register(Payments)
+class PaymentsAdmin(admin.ModelAdmin):
+    list_display = ('id', 'user_email', 'paid', 'reference')
+    search_fields = ('user__email',)
+
+    def user_email(self, obj):
+        return obj.user.email
+    def paid(self, obj):
+        return obj.reference is not None
+    paid.boolean = True
 
 
 

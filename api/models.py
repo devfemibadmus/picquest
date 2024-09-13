@@ -107,3 +107,8 @@ class History(models.Model):
     def __str__(self):
         return f"{self.amount}"
 
+class Payments(models.Model):
+    name = models.CharField(max_length=225)
+    reference = models.CharField(max_length=225, null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
