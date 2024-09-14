@@ -1,0 +1,38 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+  <base href="/static/">
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="description" content="A new Flutter project.">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="tasks">
+  <link rel="apple-touch-icon" href="{% static 'icons/Icon-192.png' %}">
+  <link rel="icon" type="image/png" href="{% static 'favicon.png' %}"/>
+  <title>tasks</title>
+  <link rel="manifest" href="{% static 'manifest.json' %}">
+  <link rel="stylesheet" href="{% static 'styles.css' %}">
+</head>
+<body>
+  <script src="{% static 'flutter_bootstrap.js' %}" async></script>
+  <div class="loading-container">
+    <img src="{% static 'logo.png' %}" alt="Logo" class="logo">
+    <div class="loading-text">Loading<span class="dots"></span></div>
+  </div>
+  <script>
+    window.addEventListener('load', function(ev) {
+      _flutter.loader.load({
+        serviceWorker: {
+          serviceWorkerVersion: serviceWorkerVersion,
+        },
+        onEntrypointLoaded: async function(engineInitializer) {
+          let appRunner = await engineInitializer.initializeEngine();
+          await appRunner.runApp();
+        }
+      });
+    });
+  </script>
+</body>
+</html>
