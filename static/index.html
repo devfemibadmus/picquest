@@ -19,7 +19,7 @@
   <div class="loading-container">
     <img src="logo.png" alt="Logo" class="logo">
     <div class="loading-text">Loading<span class="dots"></span></div>
-</div>
+  </div>
     <script>
       window.addEventListener('load', function(ev) {
         _flutter.loader.load({
@@ -29,6 +29,10 @@
           onEntrypointLoaded: async function(engineInitializer) {
             let appRunner = await engineInitializer.initializeEngine();
             await appRunner.runApp();
+            const loadingContainer = document.querySelector('.loading-container');
+            if (loadingContainer) {
+              loadingContainer.style.display = 'none';
+            }
           }
         });
       });
