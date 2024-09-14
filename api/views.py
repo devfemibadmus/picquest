@@ -10,7 +10,7 @@ from django.views.decorators.http import require_POST
 from .models import User, UserTasks, Documents, Token, Tasks, History, Payments
 
 sk_token = ''
-app_url = 'http://localhost:49900/'
+app_url = '/app'
 
 def load(request):
     json_file_path = 'tasks.json'
