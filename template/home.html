@@ -13,19 +13,84 @@
       <meta property="og:url" content="https://picquest.com">
    </head>
    <body>
-      <div class="container">
+    <div class="container">
         <nav class="navbar">
             <ul>
-                <li><a href="">Home</a></li>
-                <li><a href="/app">Tasks</a></li>
-                <li><a href="#about">About</a></li>
-                <li><a href="#terms">Terms</a></li>
-                <li><a href="#reward">Reward</a></li>
+                <li><a href="#home" data-target="home">Home</a></li>
+                <li><a href="#tasks" data-target="tasks">Tasks</a></li>
+                <li><a href="#about" data-target="about">About</a></li>
+                <li><a href="#terms" data-target="terms">Terms</a></li>
+                <li><a href="#reward" data-target="reward">Reward</a></li>
             </ul>
         </nav>        
-        <div class="main-text">
+        <div id="home" class="content active">
             <p>Train Our AI by Completing Engaging Image Tasks – Earn Rewards and Shape the Future of Intelligent Technology!</p>
         </div>
-      </div>
+        <div id="tasks" class="content">
+            <p>Here are the tasks available.</p>
+        </div>
+        <div id="about" class="content">
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+        </div>
+        <div id="terms" class="content">
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+        </div>
+        <div id="reward" class="content">
+            <h1>Rewards</h1>
+            <p>Earn Rewards for Training Our AI – Your Knowledge Pays Off!</p>
+            <p>At Pic Quest, your expertise is highly valued, and we believe in rewarding you for every contribution. By completing tasks and uploading images, you earn a monetary reward. Each task carries a specific value, starting at $0.70 per task, with your total earnings increasing as you complete more tasks and help train our AI.</p>
+            
+            <h2>How It Works</h2>
+            <ol>
+                <li>Complete Tasks: Each task comes with a fixed reward, which is added to your account balance upon completion.</li>
+                <li>Withdraw Earnings: When you're ready to withdraw, head over to the Withdraw page. You'll need to provide your bank details for us to process the request.</li>
+                <li>Reward Processing: After you submit a withdrawal request, we may:
+                    <ul>
+                        <li>Transfer the full amount you earned directly to your bank, OR</li>
+                        <li>Offer a reward of equal value, such as gift cards or other exciting prizes, sent to your email.</li>
+                    </ul>
+                </li>
+            </ol>
+            
+            <p>No matter the option, you'll always receive the full value of your hard-earned rewards. We'll send you an email notification detailing your reward, ensuring you're informed every step of the way.</p>
+        
+            <h2>Fair and Transparent</h2>
+            <p>We take pride in being transparent with our users. You will always be notified about your withdrawal status and the reward being processed, with all transactions handled securely and reliably.</p>
+        
+            <h2>Stay Informed</h2>
+            <p>Anytime a reward or withdrawal is available, you'll receive an email notification with all the details. Whether it's cash in your account or an exciting prize delivered to your inbox, your contributions will never go unrecognized!</p><br/><br/><br/>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            function showContent(targetId) {
+                document.querySelectorAll('.content').forEach(section => {
+                    section.classList.remove('active');
+                });
+                const targetSection = document.getElementById(targetId);
+                if (targetSection) {
+                    targetSection.classList.add('active');
+                } else {
+                    document.getElementById('home').classList.add('active');
+                }
+            }
+
+            const hash = window.location.hash.substring(1);
+            if (hash) {
+                showContent(hash);
+            } else {
+                showContent('home');
+            }
+
+            document.querySelectorAll('.navbar a').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('data-target');
+                    showContent(targetId);
+                    history.pushState(null, null, `#${targetId}`);
+                });
+            });
+        });
+    </script>
    </body>
 </html>
