@@ -1,1 +1,31 @@
-Home
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Pic Quest</title>
+      <link rel="icon" href="{% static 'app/favicon.png' %}" type="image/x-icon">
+      <link rel="stylesheet" href="{% static 'home.css' %}">
+      <meta property="og:title" content="Pic Quest">
+      <meta property="og:description" content="Train Our AI by Completing Engaging Image Tasks – Earn Rewards and Shape the Future of Intelligent Technology!">
+      <meta property="og:image" content="{% static 'app/logo.png' %}">
+      <meta property="og:url" content="https://picquest.com">
+   </head>
+   <body>
+      <div class="container">
+        <nav class="navbar">
+            <ul>
+                <li><a href="">Home</a></li>
+                <li><a href="/app">Tasks</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#terms">Terms</a></li>
+                <li><a href="#reward">Reward</a></li>
+            </ul>
+        </nav>        
+        <div class="main-text">
+            <p>Train Our AI by Completing Engaging Image Tasks – Earn Rewards and Shape the Future of Intelligent Technology!</p>
+        </div>
+      </div>
+   </body>
+</html>
