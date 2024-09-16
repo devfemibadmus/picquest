@@ -23,6 +23,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'corsheaders',
     'api',
+    'storages',
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
@@ -103,8 +104,12 @@ USE_I18N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.0/howto/static-files/
+from google.oauth2 import service_account
+
+GS_BUCKET_NAME = 'picquestonline'
+MEDIA_URL = f'https://storage.googleapis.com/{GS_BUCKET_NAME}/'
+DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
+GS_CREDENTIALS = service_account.Credentials.from_service_account_file('service-account.json')
 
 STATIC_URL = '/static/'
 STATIC_ROOT = 'statics'
