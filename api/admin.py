@@ -5,7 +5,7 @@ from .models import Documents, Tasks, User, Token, UserTasks, History, Payments
 
 @admin.register(Documents)
 class DocumentsAdmin(admin.ModelAdmin):
-    list_display = ('user_email', 'file_url', 'is_verify')
+    list_display = ('user_email', 'is_verify', 'file_url')
     search_fields = ('user__email',)
     list_filter = ('user__is_verify',)
     def user_email(self, obj):

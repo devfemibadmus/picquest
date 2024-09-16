@@ -3,6 +3,9 @@ from django.utils import timezone
 from django.utils.crypto import get_random_string
 from django.contrib.auth.models import AbstractUser
 
+from django.db.models.signals import pre_delete
+from django.dispatch import receiver
+
 
 class User(AbstractUser):
     email = models.EmailField(unique=True)
@@ -29,7 +32,7 @@ class Documents(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"{self.user.email} - {self.theFile.url}"
+        return self.theFile.name
 
 class Tasks(models.Model):
     title = models.CharField(max_length=50)
@@ -41,7 +44,7 @@ class Tasks(models.Model):
         return f"${self.amount}"
 
     def __str__(self):
-        return f"{self.title}"
+        return f"{self.title} {self.amount}"
 
 class UserTasks(models.Model):
     STATUS_CHOICES = [
@@ -52,11 +55,11 @@ class UserTasks(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     task = models.ForeignKey(Tasks, on_delete=models.CASCADE)
-    photo = models.ImageField(upload_to="photos/")
+    photo = models.ImageField(upload_to="User Tasks/")
     status = models.CharField(max_length=15, choices=STATUS_CHOICES, default='pendingTasks')
 
     def __str__(self):
-        return f"{self.task.title}"
+        return self.task.title
 
 class Token(models.Model):
     key = models.CharField(max_length=255, unique=True, blank=True, null=True)
@@ -67,7 +70,7 @@ class Token(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.key}"
+        return self.key
 
 class History(models.Model):
     ACTION_CHOICES = [
@@ -106,10 +109,21 @@ class History(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.amount}"
+        return self.amount
 
 class Payments(models.Model):
     name = models.CharField(max_length=225)
     reference = models.CharField(max_length=225, null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return self.user.email
+
+@receiver(pre_delete)
+def delete_file(sender, instance, **kwargs):
+    if sender == Documents:
+        if instance.theFile:
+            instance.theFile.delete(save=False)
+    elif sender == UserTasks:
+        if instance.photo:
+            instance.photo.delete(save=False)
