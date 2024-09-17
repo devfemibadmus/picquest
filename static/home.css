@@ -88,8 +88,7 @@ a{
 @media screen and (min-width: 768px) {
   .content.active {
     width: 60vw;
-    display: flex;
-    flex-direction: column;
+    text-align: center;
     align-items: center;
     justify-content: center;
     margin: auto;
