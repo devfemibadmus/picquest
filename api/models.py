@@ -3,7 +3,7 @@ from django.utils import timezone
 from django.utils.crypto import get_random_string
 from django.contrib.auth.models import AbstractUser
 
-from django.db.models.signals import pre_delete
+from django.db.models.signals import pre_delete, post_delete
 from django.dispatch import receiver
 
 
@@ -28,11 +28,12 @@ class User(AbstractUser):
         super().save(*args, **kwargs)
 
 class Documents(models.Model):
-    theFile = models.FileField(upload_to='Documents/')
+    govID = models.FileField(upload_to='Documents/Gov/')
+    stuID = models.FileField(upload_to='Documents/Student/')
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.theFile.name
+        return self.user.first_name
 
 class Tasks(models.Model):
     title = models.CharField(max_length=50)
@@ -119,11 +120,4 @@ class Payments(models.Model):
     def __str__(self):
         return self.user.email
 
-@receiver(pre_delete)
-def delete_file(sender, instance, **kwargs):
-    if sender == Documents:
-        if instance.theFile:
-            instance.theFile.delete(save=False)
-    elif sender == UserTasks:
-        if instance.photo:
-            instance.photo.delete(save=False)
+

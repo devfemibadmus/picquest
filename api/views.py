@@ -297,8 +297,7 @@ def verification(request):
     if studentId is None or govId is None:
         return JsonResponse({'error': True, 'message': 'Invalid data, try again'}, status=400)
     user = Token.objects.get(key=token_key).user
-    Documents.objects.create(user=user, theFile=govId)
-    Documents.objects.create(user=user, theFile=studentId)
+    Documents.objects.create(user=user, govID=govId, stuID=studentId)
     user.documentSubmitted = True
     user.save()
     return JsonResponse({'success': True, 'message': 'Document upload successfully'}, status=200)

@@ -9,7 +9,7 @@ from django.contrib.admin import SimpleListFilter
 
 class UserTasksAdminFilter(SimpleListFilter):
     title = _('Photo Deleted')
-    parameter_name = 'is_file_deleted'
+    parameter_name = 'is_photo_deleted'
 
     def lookups(self, request, model_admin):
         return (
@@ -25,7 +25,7 @@ class UserTasksAdminFilter(SimpleListFilter):
 
 class DocumentsAdminFilter(SimpleListFilter):
     title = _('File Deleted')
-    parameter_name = 'is_file_deleted'
+    parameter_name = 'is_files_deleted'
 
     def lookups(self, request, model_admin):
         return (
@@ -35,16 +35,16 @@ class DocumentsAdminFilter(SimpleListFilter):
 
     def queryset(self, request, queryset):
         if self.value() == 'yes':
-            return queryset.filter(theFile='')
+            return queryset.filter(govID='', stuID='')
         if self.value() == 'no':
-            return queryset.exclude(theFile='')
+            return queryset.exclude(govID='', stuID='')
 
 @admin.register(Documents)
 class DocumentsAdmin(admin.ModelAdmin):
-    list_display = ('user_email', 'user_is_verify', 'file_url')
+    list_display = ('user_email', 'user_is_verify', 'gov_id', 'stu_id')
     search_fields = ('user__email',)
     list_filter = ('user__is_verify', DocumentsAdminFilter)
-    actions = ['delete_file']
+    actions = ['verify_user', 'un_verified']
 
     def user_email(self, obj):
         return obj.user.email
@@ -54,20 +54,41 @@ class DocumentsAdmin(admin.ModelAdmin):
     user_is_verify.boolean = True
     user_is_verify.short_description = "Verified User"
 
-    def delete_file(self, request, queryset):
+    def un_verified(self, request, queryset):
         for obj in queryset:
-            if obj.theFile:
-                obj.theFile.delete(save=False)
-                obj.theFile = None
-                obj.save()
-        self.message_user(request, "Selected files have been deleted.")
-    delete_file.short_description = "Delete selected files"
+            if obj.govID:
+                obj.user.is_verify = False
+                obj.user.documentSubmitted = False
+                obj.user.save()
+                obj.govID.delete(save=False)
+                obj.stuID.delete(save=False)
+                obj.govID = None
+                obj.stuID = None
+                obj.delete()
+        self.message_user(request, "Selected documents have been unverified.")
+    un_verified.short_description = "Unverified selected documents"
 
-    def file_url(self, obj):
-        if obj.theFile:
-            return format_html('<a href="{}" download>Preview</a>', obj.theFile.url)
+    def verify_user(self, request, queryset):
+        for obj in queryset:
+            if obj.govID:
+                obj.user.is_verify = True
+                obj.user.documentSubmitted = True
+                obj.user.save()
+                obj.delete()
+        self.message_user(request, "Selected documents have been verified.")
+    verify_user.short_description = "Verify selected documents"
+
+    def gov_id(self, obj):
+        if obj.govID:
+            return format_html('<a href="{}" target="_blank"><img src="{}" alt="Image cannot be displayed" width="50" height="50" /></a>', obj.govID.url, obj.govID.url)
         return "File Deleted"
-    file_url.short_description = "File"
+    def stu_id(self, obj):
+        if obj.stuID:
+            return format_html('<a href="{}" target="_blank"><img src="{}" alt="Image cannot be displayed" width="50" height="50" /></a>', obj.stuID.url, obj.stuID.url)
+        return "File Deleted"
+
+    gov_id.short_description = "Gov ID"
+    stu_id.short_description = "Student ID"
 
 @admin.register(Tasks)
 class TasksAdmin(admin.ModelAdmin):
@@ -114,13 +135,13 @@ class UserTasksAdmin(admin.ModelAdmin):
 
     def photo_display(self, obj):
         if obj.photo:
-            return format_html('<img src="{}" width="50" height="50" />', obj.photo.url)
+            return format_html('<a href="{}" target="_blank"><img src="{}" alt="Image cannot be displayed" width="50" height="50" /></a>', obj.photo.url, obj.photo.url)
         return "Photo Deleted"
     photo_display.short_description = "Photo"
 
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
-    list_display = ('email', 'balance', 'referral', 'is_verify', 'hasPaid', 'documentSubmitted')
+    list_display = ('email', 'balance', 'is_verify', 'hasPaid', 'documentSubmitted', 'referral')
     search_fields = ('email',)
     list_filter = ('is_verify', 'hasPaid', 'documentSubmitted')
 
