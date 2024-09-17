@@ -28,7 +28,6 @@ class User(AbstractUser):
         super().save(*args, **kwargs)
 
 class Documents(models.Model):
-    is_downloaded = models.BooleanField(default=False)
     theFile = models.FileField(upload_to='Documents/')
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
