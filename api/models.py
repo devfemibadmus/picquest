@@ -3,9 +3,6 @@ from django.utils import timezone
 from django.utils.crypto import get_random_string
 from django.contrib.auth.models import AbstractUser
 
-from django.db.models.signals import pre_delete, post_delete
-from django.dispatch import receiver
-
 
 class User(AbstractUser):
     pendTasks = models.IntegerField(default=0)
@@ -30,7 +27,7 @@ class User(AbstractUser):
             self.username = self.email
         super().save(*args, **kwargs)
 
-class Documents(models.Model):
+class Document(models.Model):
     govID = models.FileField(upload_to='Documents/Gov/')
     stuID = models.FileField(upload_to='Documents/Student/')
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -38,7 +35,7 @@ class Documents(models.Model):
     def __str__(self):
         return self.user.first_name
 
-class Tasks(models.Model):
+class Task(models.Model):
     title = models.CharField(max_length=50)
     amount = models.FloatField()
     description = models.CharField(max_length=200)
@@ -50,10 +47,10 @@ class Tasks(models.Model):
     def __str__(self):
         return f"{self.title} {self.amount}"
 
-class UserTasks(models.Model):
+class UserTask(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    task = models.ForeignKey(Tasks, on_delete=models.CASCADE)
+    task = models.ForeignKey(Task, on_delete=models.CASCADE)
     photo = models.ImageField(upload_to="User Tasks/")
 
     def __str__(self):

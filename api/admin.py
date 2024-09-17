@@ -2,12 +2,12 @@ from django import forms
 from django.db import models
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import Documents, Tasks, User, Token, UserTasks, PayOut, VerificationFee
+from .models import Document, Task, User, Token, UserTask, PayOut, VerificationFee
 
 from django.utils.translation import gettext_lazy as _
 from django.contrib.admin import SimpleListFilter
 
-class UserTasksAdminFilter(SimpleListFilter):
+class UserTaskAdminFilter(SimpleListFilter):
     title = _('Photo Deleted')
     parameter_name = 'is_photo_deleted'
 
@@ -23,7 +23,7 @@ class UserTasksAdminFilter(SimpleListFilter):
         if self.value() == 'no':
             return queryset.exclude(photo='')
 
-class DocumentsAdminFilter(SimpleListFilter):
+class DocumentAdminFilter(SimpleListFilter):
     title = _('File Deleted')
     parameter_name = 'is_files_deleted'
 
@@ -39,11 +39,11 @@ class DocumentsAdminFilter(SimpleListFilter):
         if self.value() == 'no':
             return queryset.exclude(govID='', stuID='')
 
-@admin.register(Documents)
-class DocumentsAdmin(admin.ModelAdmin):
+@admin.register(Document)
+class DocumentAdmin(admin.ModelAdmin):
     list_display = ('user_email', 'user_is_verify', 'gov_id', 'stu_id')
     search_fields = ('user__email',)
-    list_filter = ('user__is_verify', DocumentsAdminFilter)
+    list_filter = ('user__is_verify', DocumentAdminFilter)
     actions = ['verify_user', 'un_verified']
 
     def user_email(self, obj):
@@ -97,8 +97,8 @@ class DocumentsAdmin(admin.ModelAdmin):
     verify_user.short_description = "Verify selected documents"
     un_verified.short_description = "Unverified selected documents"
 
-@admin.register(Tasks)
-class TasksAdmin(admin.ModelAdmin):
+@admin.register(Task)
+class TaskAdmin(admin.ModelAdmin):
     list_display = ('amounts', 'title', 'description')
     search_fields = ('title',)
     formfield_overrides = {
@@ -114,11 +114,11 @@ class PayOutAdmin(admin.ModelAdmin):
         return f"${obj.amount}"
     formatted_amount.short_description = 'Amount'
 
-@admin.register(UserTasks)
-class UserTasksAdmin(admin.ModelAdmin):
+@admin.register(UserTask)
+class UserTaskAdmin(admin.ModelAdmin):
     list_display = ('task_title', 'created_at', 'user_email', 'photo_display')
     search_fields = ('task__title', 'user__email')
-    list_filter = ('user__is_verify', 'created_at', UserTasksAdminFilter)
+    list_filter = ('user__is_verify', 'created_at', UserTaskAdminFilter)
     actions = ['fail_task', 'pass_task']
 
     def task_title(self, obj):
