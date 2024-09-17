@@ -2,7 +2,7 @@ from django import forms
 from django.db import models
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import Documents, Tasks, User, Token, UserTasks, History, Payments
+from .models import Documents, Tasks, User, Token, UserTasks, PayOut, VerificationFee
 
 from django.utils.translation import gettext_lazy as _
 from django.contrib.admin import SimpleListFilter
@@ -105,8 +105,8 @@ class TasksAdmin(admin.ModelAdmin):
         models.FloatField: {'widget': forms.NumberInput(attrs={'step': '0.1'})},
     }
 
-@admin.register(History)
-class HistoryAdmin(admin.ModelAdmin):
+@admin.register(PayOut)
+class PayOutAdmin(admin.ModelAdmin):
     list_display = ('dates', 'action', 'user', 'formatted_amount', 'description')
     search_fields = ('user', 'dates')
     list_filter = ('user__is_verify', 'dates')
@@ -116,39 +116,52 @@ class HistoryAdmin(admin.ModelAdmin):
 
 @admin.register(UserTasks)
 class UserTasksAdmin(admin.ModelAdmin):
-    list_display = ('task_title', 'status', 'created_at', 'user_email', 'is_verify', 'photo_display')
+    list_display = ('task_title', 'created_at', 'user_email', 'photo_display')
     search_fields = ('task__title', 'user__email')
-    list_filter = ('status', 'user__is_verify', 'created_at', UserTasksAdminFilter)
-    actions = ['delete_photo']
+    list_filter = ('user__is_verify', 'created_at', UserTasksAdminFilter)
+    actions = ['fail_task', 'pass_task']
 
     def task_title(self, obj):
         return obj.task.title
 
     def user_email(self, obj):
         return obj.user.email
-
-    def is_verify(self, obj):
-        return obj.user.is_verify
-    is_verify.boolean = True
-
-    def delete_photo(self, request, queryset):
+ 
+    def fail_task(self, request, queryset):
         for obj in queryset:
-            if obj.photo:
-                obj.photo.delete(save=False)
-                obj.photo = None
-                obj.save()
-        self.message_user(request, "Selected photos have been deleted.")
-    delete_photo.short_description = "Delete selected photos"
+            obj.user.pendTasks -=1
+            obj.user.failTasks +=1
+            obj.user.save()
+            obj.delete()
+        self.message_user(request, 'Selected user tasks has failed')
+    
+    def pass_task(self, request, queryset):
+        for obj in queryset:
+            obj.user.pendTasks -=1
+            obj.user.passTasks +=1
+            obj.user.save()
+            obj.delete()
+        PayOutobjects.create(user=obj.user, action='pending credit', amount=obj.task.amount)
+        self.message_user(request, 'Selected user tasks has passed')
 
     def photo_display(self, obj):
         if obj.photo:
             return format_html('<a href="{}" target="_blank"><img src="{}" alt="Image cannot be displayed" width="50" height="50" /></a>', obj.photo.url, obj.photo.url)
         return "Photo Deleted"
+
+    def get_actions(self, request):
+        actions = super().get_actions(request)
+        if 'delete_selected' in actions:
+            del actions['delete_selected']
+        return actions
+
     photo_display.short_description = "Photo"
+    fail_task.short_description = "Fail selected tasks"
+    pass_task.short_description = "Pass selected tasks"
 
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
-    list_display = ('email', 'balance', 'is_verify', 'hasPaid', 'documentSubmitted', 'referral')
+    list_display = ('email', 'pendTasks', 'failTasks', 'passTasks', 'balance', 'is_verify', 'hasPaid', 'documentSubmitted')
     search_fields = ('email',)
     list_filter = ('is_verify', 'hasPaid', 'documentSubmitted')
 
@@ -168,8 +181,8 @@ class TokenAdmin(admin.ModelAdmin):
     is_verify.boolean = True
     documentSubmitted.boolean = True
 
-@admin.register(Payments)
-class PaymentsAdmin(admin.ModelAdmin):
+@admin.register(VerificationFee)
+class VerificationFeeAdmin(admin.ModelAdmin):
     list_display = ('user_email', 'reference', 'is_verify', 'hasPaid', 'documentSubmitted')
     search_fields = ('user__email',)
     def user_email(self, obj):

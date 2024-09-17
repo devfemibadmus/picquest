@@ -7,7 +7,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
-from .models import User, UserTasks, Documents, Token, Tasks, History, Payments
+from .models import User, UserTasks, Documents, Token, Tasks, PayOut, VerificationFee
 
 sk_token = ''
 app_url = '/app'
@@ -65,21 +65,18 @@ class UserView:
         return tasks
     
     def getUserStatus(self):
-        user = self.user
-        pendingTasks = UserTasks.objects.filter(user=user, status='pendingTasks').count()
-        passedTasks = UserTasks.objects.filter(user=user, status='passedTasks').count()
-        failedTasks = UserTasks.objects.filter(user=user, status='failedTasks').count()        
+        user = self.user      
         status = {
-            'pendingTasks': pendingTasks,
-            'passedTasks': passedTasks,
-            'failedTasks': failedTasks,
+            'pendingTasks': user.pendTasks,
+            'passedTasks': user.passTasks,
+            'failedTasks': user.failTasks,
         }   
         return status
     
     def getUserHistory(self):
         user = self.user
-        history = History.objects.filter(user=user).all()
-        history = list(history.values())
+        history = PayOutobjects.filter(user=user).all()
+        history = list(PayOutvalues())
         return history
     
     @csrf_exempt
@@ -118,7 +115,7 @@ def signup(request):
     referral = None
     if referral_email and User.objects.filter(email=referral_email).exists():
         referral = User.objects.get(email=referral_email)
-        History.objects.create(user=referral, amount='0.03', action='referral')
+        PayOutobjects.create(user=referral, amount='0.03', action='referral')
     if User.objects.filter(email=email).exists():
         return JsonResponse({'error': True, 'message': 'Email already in use'}, status=400)
     user = User(email=email, first_name=fullName, referral=referral)
@@ -191,9 +188,9 @@ def payment(request):
         data = response.json()
         authorization_url = data['data']['authorization_url']
         paymentName = authorization_url.split("/")[-1]
-        payment = Payments.objects.filter(user=user, reference__isnull=True).first()
+        payment = VerificationFee.objects.filter(user=user, reference__isnull=True).first()
         if payment is None:
-            payment = Payments.objects.create(user=user, name=paymentName)
+            payment = VerificationFee.objects.create(user=user, name=paymentName)
         else:
             payment.name = paymentName
             payment.save()
@@ -213,7 +210,7 @@ def callback(request, email):
                 user = User.objects.get(email=email)
                 user.hasPaid = True
                 user.save()
-                payment = Payments.objects.filter(user=user, reference__isnull=True).first()
+                payment = VerificationFee.objects.filter(user=user, reference__isnull=True).first()
                 payment.reference = reference
                 payment.save()
     return redirect(app_url)
@@ -232,6 +229,8 @@ def submit(request):
     user = Token.objects.get(key=token_key).user
     tasks = Tasks.objects.get(id=task_id)
     UserTasks.objects.create(user=user, task=tasks, created_at=timezone.now, photo=photo_file)
+    user.pendTasks +=1
+    user.save()
     return JsonResponse({'success': True, 'message': 'Task submitted successfully'}, status=200)
 
 @csrf_exempt
@@ -247,7 +246,7 @@ def withdraw(request):
         return JsonResponse({'error': True, 'message': 'Invalid data, try again'}, status=400)
     user.balance = user.balance - float(amount)
     user.save()
-    History.objects.create(user=user, amount=amount)
+    PayOutobjects.create(user=user, amount=amount)
     return JsonResponse({'success': True}, status=200)
 
 @csrf_exempt

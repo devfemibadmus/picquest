@@ -8,6 +8,9 @@ from django.dispatch import receiver
 
 
 class User(AbstractUser):
+    pendTasks = models.IntegerField(default=0)
+    failTasks = models.IntegerField(default=0)
+    passTasks = models.IntegerField(default=0)
     email = models.EmailField(unique=True)
     balance = models.IntegerField(default=0)
     daily_task = models.IntegerField(default=3)
@@ -48,16 +51,10 @@ class Tasks(models.Model):
         return f"{self.title} {self.amount}"
 
 class UserTasks(models.Model):
-    STATUS_CHOICES = [
-        ('pendingTasks', 'pendingTasks'),
-        ('passedTasks', 'passedTasks'),
-        ('failedTasks', 'failedTasks'),
-    ]
     created_at = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     task = models.ForeignKey(Tasks, on_delete=models.CASCADE)
     photo = models.ImageField(upload_to="User Tasks/")
-    status = models.CharField(max_length=15, choices=STATUS_CHOICES, default='pendingTasks')
 
     def __str__(self):
         return self.task.title
@@ -73,7 +70,7 @@ class Token(models.Model):
     def __str__(self):
         return self.key
 
-class History(models.Model):
+class PayOut(models.Model):
     ACTION_CHOICES = [
         ('debit', 'Debit'),
         ('credit', 'Credit'),
@@ -112,7 +109,7 @@ class History(models.Model):
     def __str__(self):
         return self.amount
 
-class Payments(models.Model):
+class VerificationFee(models.Model):
     name = models.CharField(max_length=225)
     reference = models.CharField(max_length=225, null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
