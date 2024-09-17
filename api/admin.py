@@ -51,8 +51,16 @@ class DocumentsAdmin(admin.ModelAdmin):
 
     def user_is_verify(self, obj):
         return obj.user.is_verify
-    user_is_verify.boolean = True
-    user_is_verify.short_description = "Verified User"
+
+    def gov_id(self, obj):
+        if obj.govID:
+            return format_html('<a href="{}" target="_blank"><img src="{}" alt="Image cannot be displayed" width="50" height="50" /></a>', obj.govID.url, obj.govID.url)
+        return "File Deleted"
+    
+    def stu_id(self, obj):
+        if obj.stuID:
+            return format_html('<a href="{}" target="_blank"><img src="{}" alt="Image cannot be displayed" width="50" height="50" /></a>', obj.stuID.url, obj.stuID.url)
+        return "File Deleted"
 
     def un_verified(self, request, queryset):
         for obj in queryset:
@@ -66,7 +74,6 @@ class DocumentsAdmin(admin.ModelAdmin):
                 obj.stuID = None
                 obj.delete()
         self.message_user(request, "Selected documents have been unverified.")
-    un_verified.short_description = "Unverified selected documents"
 
     def verify_user(self, request, queryset):
         for obj in queryset:
@@ -76,19 +83,19 @@ class DocumentsAdmin(admin.ModelAdmin):
                 obj.user.save()
                 obj.delete()
         self.message_user(request, "Selected documents have been verified.")
-    verify_user.short_description = "Verify selected documents"
 
-    def gov_id(self, obj):
-        if obj.govID:
-            return format_html('<a href="{}" target="_blank"><img src="{}" alt="Image cannot be displayed" width="50" height="50" /></a>', obj.govID.url, obj.govID.url)
-        return "File Deleted"
-    def stu_id(self, obj):
-        if obj.stuID:
-            return format_html('<a href="{}" target="_blank"><img src="{}" alt="Image cannot be displayed" width="50" height="50" /></a>', obj.stuID.url, obj.stuID.url)
-        return "File Deleted"
+    def get_actions(self, request):
+        actions = super().get_actions(request)
+        if 'delete_selected' in actions:
+            del actions['delete_selected']
+        return actions
 
+    user_is_verify.boolean = True
     gov_id.short_description = "Gov ID"
     stu_id.short_description = "Student ID"
+    user_is_verify.short_description = "Verified User"
+    verify_user.short_description = "Verify selected documents"
+    un_verified.short_description = "Unverified selected documents"
 
 @admin.register(Tasks)
 class TasksAdmin(admin.ModelAdmin):
