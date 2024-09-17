@@ -8,14 +8,18 @@ body {
   background-position: center;
   overflow: hidden;
 }
-  
+
 .container {
-  display: block;
   height: 100vh;
   width: 100vw;
   color: white;
   background-color: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(10px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }
 
 .navbar {
@@ -51,22 +55,18 @@ body {
   text-decoration: underline;
 }
 
+a {
+  text-decoration: none;
+  color: #00faff;
+}
+
 .content {
   display: none;
 }
 
-.content.active {
-  height: 100%;
-  display: block;
-  text-align: left;
-  background-color: transparent;
-  padding: 40px;
-  overflow-y: auto;
-}
-
-.content.active h1, .content.active h2 {
+.content.active h2 {
   color: #00faff;
-  margin-bottom: 10px;
+  padding-top: 30px;
 }
 
 .content.active p, .content.active ol {
@@ -80,34 +80,40 @@ body {
   padding-left: 20px;
 }
 
-a{
-  text-decoration: none;
-  color: #00faff;
+.content.active {
+  margin: auto;
+  height: 100vh;
+  padding: 40px;
+  overflow-y: auto;
+  text-align: left;
+  background-color: transparent;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 20px;
 }
 
 @media screen and (min-width: 768px) {
   .content.active {
     width: 60vw;
-    text-align: center;
-    align-items: center;
-    justify-content: center;
-    margin: auto;
-  }
-  ::-webkit-scrollbar {
-    width: 10px;
-    height: 12px;
+    max-width: 800px;
   }
   
+  ::-webkit-scrollbar {
+    width: 1px;
+  }
+
   ::-webkit-scrollbar-track {
     background: transparent;
     border-radius: 10px;
   }
-  
+
   ::-webkit-scrollbar-thumb {
     background: #888;
     border-radius: 10px;
   }
-  
+
   ::-webkit-scrollbar-thumb:hover {
     background: #555;
   }
