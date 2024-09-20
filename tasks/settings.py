@@ -1,16 +1,43 @@
+from google.oauth2 import service_account
 from pathlib import Path
 import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-mnaraanlde#ue56^7a*afkqatl7ahtq66e&*rxlc%t7vgev7ir'
+def load_env_vars(env_file_path):
+    with open(env_file_path, 'r') as file:
+        for line in file:
+            if line.strip() and not line.startswith('#'):
+                key, value = line.strip().split('=', 1)
+                os.environ[key] = value
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+load_env_vars(os.path.join(BASE_DIR, '.env'))
 
-ALLOWED_HOSTS = ['*']
+DEBUG = os.environ.get('DEBUG', True) == 'True'
+SK_TOKEN = os.getenv('SK_TOKEN')
 
+if DEBUG == True:
+    ALLOWED_HOSTS = ['*']
+    SECRET_KEY = 'django-insecure-mnaraanlde#ue56^7a*afkqatl7ahtq66e&*rxlc%t7vgev7ir'
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
+else:
+    ALLOWED_HOSTS = ['picquest.online']
+    SECRET_KEY = os.getenv('SECRET')
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': 'picquest',
+            'USER': 'picquest',
+            'PASSWORD': 'password123',
+            'HOST': 'localhost',
+        }
+    }
 
 # Application definition
 
@@ -21,7 +48,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'corsheaders',
+    # 'corsheaders',
     'api',
     'storages',
 ]
@@ -31,10 +58,8 @@ CORS_ALLOW_ALL_ORIGINS = True
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -104,7 +129,6 @@ USE_I18N = True
 USE_TZ = True
 
 
-from google.oauth2 import service_account
 
 GS_BUCKET_NAME = 'picquestonline'
 MEDIA_URL = f'https://storage.googleapis.com/{GS_BUCKET_NAME}/'

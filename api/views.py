@@ -1,5 +1,6 @@
 import json, requests, time
 from datetime import datetime
+from django.conf import settings
 from django.utils import timezone
 from django.http import JsonResponse
 from .forms import SigninForm, SignupForm
@@ -9,8 +10,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from .models import User, UserTask, Document, Token, Task, PayOut, VerificationFee
 
-sk_token = ''
-app_url = '/app'
+sk_token = settings.SK_TOKEN
+app_url = '/app/'
 
 def load(request):
     json_file_path = 'tasks.json'
