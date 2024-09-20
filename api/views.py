@@ -38,6 +38,7 @@ class UserView:
         user_info = {
             'name': user.first_name,
             'email': user.email,
+            'rearns': user.rearns,
             'balance': user.balance,
             'referral': referral,
             'hasPaid': user.hasPaid,
@@ -45,6 +46,7 @@ class UserView:
             'passedTasks': user.passTasks,
             'failedTasks': user.failTasks,
             'pendingTasks': user.pendTasks,
+            'minWithdraw': user.minWithdraw,
             'documentSubmitted': user.documentSubmitted,
         }
         return user_info
@@ -128,7 +130,7 @@ def signin(request):
     user = authenticate(username=email, password=password)
     if user is None:
         return JsonResponse({'error': True, 'message': 'Invalid email or password'}, status=400)
-    user_data, status, tasks, token = UserView(user).getUser()
+    user_data, tasks, token = UserView(user).getUser()
     return JsonResponse({'success': True, 'user': user_data, 'tasks': tasks, 'token': token}, status=200)
 
 @csrf_exempt

@@ -5,14 +5,16 @@ from django.contrib.auth.models import AbstractUser
 
 
 class User(AbstractUser):
+    email = models.EmailField(unique=True)
+    rearns = models.FloatField(default=0.05)
+    balance = models.IntegerField(default=0)
     pendTasks = models.IntegerField(default=0)
     failTasks = models.IntegerField(default=0)
     passTasks = models.IntegerField(default=0)
-    email = models.EmailField(unique=True)
-    balance = models.IntegerField(default=0)
     daily_task = models.IntegerField(default=3)
-    is_verify = models.BooleanField(default=False)
     hasPaid = models.BooleanField(default=False)
+    is_verify = models.BooleanField(default=False)
+    minWithdraw = models.IntegerField(default=100)
     documentSubmitted = models.BooleanField(default=False)
     referral = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL, related_name='referred_users')
 
