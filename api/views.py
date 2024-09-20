@@ -8,7 +8,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
-from .models import User, UserTask, Document, Token, Task, PayOut, VerificationFee
+from .models import User, UserTask, Document, Token, Task, PayOut, VerificationFee, BankList
 
 sk_token = settings.SK_TOKEN
 app_url = '/app/'
@@ -241,12 +241,15 @@ def bankList(request):
     token_key = request.POST.get('token')
     if token_key is None or not Token.objects.filter(key=token_key).exists():
         return JsonResponse({'error': True, 'message': 'Invalid auth token'}, status=400)
-    headers = {"Authorization": f"Bearer {sk_token}"}
-    response = requests.get(url, headers=headers)
-    data = response.json()
-    if data['status'] == True:
-        return JsonResponse({'success': True, 'data': data['data']}, status=200)
-    return JsonResponse({'error': True}, status=400)
+    # headers = {"Authorization": f"Bearer {sk_token}"}
+    # response = requests.get(url, headers=headers)
+    # data = response.json()
+    # if data['status'] == True:
+    #    return JsonResponse({'success': True, 'data': data['data']}, status=200)
+    # return JsonResponse({'error': True}, status=400)
+    banks = BankList.objects.all()
+    data = list(banks.values())
+    return JsonResponse({'success': True, 'data': data}, status=200)
 
 @csrf_exempt
 def bankResolve(request):

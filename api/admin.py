@@ -2,7 +2,7 @@ from django import forms
 from django.db import models
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import Document, Task, User, Token, UserTask, PayOut, VerificationFee
+from .models import Document, Task, User, Token, UserTask, PayOut, VerificationFee, BankList
 
 from django.utils.translation import gettext_lazy as _
 from django.contrib.admin import SimpleListFilter
@@ -197,5 +197,8 @@ class VerificationFeeAdmin(admin.ModelAdmin):
     is_verify.boolean = True
     documentSubmitted.boolean = True
 
-
+@admin.register(BankList)
+class BankListAdmin(admin.ModelAdmin):
+    list_display = ('code', 'name')
+    search_fields = ('code', 'name')
 
