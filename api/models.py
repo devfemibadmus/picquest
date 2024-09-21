@@ -79,34 +79,39 @@ class PayOut(models.Model):
     
     DESCRIPTION_CHOICES = [
         ('Funds have been successfully withdrawn from your account as per your request for cash out or transfer.', 'Funds have been successfully withdrawn from your account as per your request for cash out or transfer.'),
-        ('Earned money has been credited to your account from completed tasks or job payments.', 'Earned money has been credited to your account from completed tasks or job payments.'),
+        ('Earned money has been credited to your account from completed tasks payments.', 'Earned money has been credited to your account from completed tasks payments.'),
+        ('Referral Earned money has been credited to your account from completed tasks payments.', 'Referral Earned money has been credited to your account from completed tasks payments.'),
         ('Your request to withdraw funds is currently under review and is awaiting approval for processing.', 'Your request to withdraw funds is currently under review and is awaiting approval for processing.'),
         ('Credit for the tasks you’ve completed is pending and will be added to your account once reviewed.', 'Credit for the tasks you’ve completed is pending and will be added to your account once reviewed.'),
         ('Credit for Referral will be added to your account once the referred user verifies their account.', 'Credit for Referral will be added to your account once the referred user verifies their account.'),
     ]
     
-    amount = models.CharField(max_length=50)
+    amount = models.FloatField()
     dates = models.DateField(default=timezone.now)
-    action = models.CharField(max_length=15, choices=ACTION_CHOICES, default='pending debit')
+    checkout = models.BooleanField(default=False)
+    actions = models.CharField(max_length=15, choices=ACTION_CHOICES, default='pending debit')
     description = models.CharField(max_length=200, choices=DESCRIPTION_CHOICES, default='Your request to withdraw funds is currently under review and is awaiting approval for processing.')
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def save(self, *args, **kwargs):
-        if self.action == 'debit':
+        if self.actions == 'debit':
             self.description = 'Funds have been successfully withdrawn from your account as per your request for cash out or transfer.'
-        elif self.action == 'credit':
-            self.description = 'Earned money has been credited to your account from completed tasks or job payments.'
-        elif self.action == 'pending debit':
+        elif self.actions == 'credit':
+            self.description = 'Earned money has been credited to your account from completed tasks payments.'
+        elif self.actions == 'credit referral':
+            self.actions = 'credit'
+            self.description = 'Referral Earned money has been credited to your account from completed tasks payments.'
+        elif self.actions == 'pending debit':
             self.description = 'Your request to withdraw funds is currently under review and is awaiting approval for processing.'
-        elif self.action == 'pending credit':
+        elif self.actions == 'pending credit':
             self.description = 'Credit for the tasks you’ve completed is pending and will be added to your account once reviewed.'
-        elif self.action == 'referral':
-            self.action = 'pending credit'
+        elif self.actions == 'referral':
+            self.actions = 'pending credit'
             self.description = 'Credit for Referral will be added to your account once the referred user verifies their account.'
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return self.amount
+        return str(self.amount)
 
 class VerificationFee(models.Model):
     name = models.CharField(max_length=225)

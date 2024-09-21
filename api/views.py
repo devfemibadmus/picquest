@@ -108,15 +108,15 @@ def signup(request):
     fullName = form.cleaned_data['fullName']
     referral_email = request.POST.get('referral')
     referral = None
-    if referral_email and User.objects.filter(email=referral_email).exists():
-        referral = User.objects.get(email=referral_email)
-        PayOut.objects.create(user=referral, amount='0.03', action='referral')
     if User.objects.filter(email=email).exists():
         return JsonResponse({'error': True, 'message': 'Email already in use'}, status=400)
     user = User(email=email, first_name=fullName, referral=referral)
     user.set_password(password)
     user.save()
-    user_data, status, tasks, token = UserView(user).getUser()
+    user_data, tasks, token = UserView(user).getUser()
+    if referral_email and User.objects.filter(email=referral_email).exists():
+        referral = User.objects.get(email=referral_email)
+        PayOut.objects.create(user=referral, amount=user.rearns, action='referral')
     return JsonResponse({'success': True, 'user': user_data, 'tasks': tasks, 'token': token}, status=200)
 
 @csrf_exempt
@@ -197,6 +197,11 @@ def callback(request, email):
                 payment = VerificationFee.objects.filter(user=user, reference__isnull=True).first()
                 payment.reference = reference
                 payment.save()
+                referral = user.referral
+                payout = PayOut.objects.filter(user=referral, action='pending credit', description__icontains="Referral")
+                payout.actions = 'credit referral'
+                payout.checkout = True
+                payout.save()
     return redirect(app_url)
 
 @csrf_exempt

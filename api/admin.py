@@ -107,12 +107,50 @@ class TaskAdmin(admin.ModelAdmin):
 
 @admin.register(PayOut)
 class PayOutAdmin(admin.ModelAdmin):
-    list_display = ('dates', 'action', 'user', 'formatted_amount', 'description')
+    list_display = ('dates', 'actions', 'user', 'formatted_amount', 'description', 'checkout')
     search_fields = ('user', 'dates')
-    list_filter = ('user__is_verify', 'dates')
+    list_filter = ('user__is_verify', 'dates', 'checkout')
+    actions = ['mark_credit', 'mark_debit', 'mark_cancel']
+
     def formatted_amount(self, obj):
         return f"${obj.amount}"
     formatted_amount.short_description = 'Amount'
+
+    def mark_credit(self, request, queryset):
+        for payout in queryset:
+            if not payout.checkout:
+                if payout.actions == 'pending credit':
+                    payout.actions = 'credit'
+                    user = payout.user
+                    user.balance +=payout.amount
+                    payout.checkout = True
+                    payout.description = 'Earned money has been credited to your account from completed tasks payments.'
+                    user.save()
+                    payout.save()
+        self.message_user(request, "Selected payouts have been marked as credit.")
+    def mark_debit(self, request, queryset):
+        for payout in queryset:
+            if not payout.checkout:
+                if payout.actions == 'pending debit':
+                    payout.actions = 'debit'
+                    payout.checkout = True
+                    payout.description = 'Funds have been successfully withdrawn from your account as per your request for cash out or transfer.'
+                    payout.save()
+        self.message_user(request, "Selected payouts have been marked as debit.")
+    def mark_cancel(self, request, queryset):
+        for payout in queryset:
+            if not payout.checkout:
+                if payout.actions == 'pending debit':
+                    user = payout.user
+                    user.balance +=payout.amount
+                    user.save()
+                    payout.delete()
+        self.message_user(request, "Selected payouts have been marked as cancelled.")
+
+    mark_debit.short_description = 'Mark selected as Debit'
+    mark_credit.short_description = 'Mark selected as Credit'
+    mark_cancel.short_description = 'Mark selected as Cancelled'
+
 
 @admin.register(UserTask)
 class UserTaskAdmin(admin.ModelAdmin):
