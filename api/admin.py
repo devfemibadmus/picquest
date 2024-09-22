@@ -1,7 +1,9 @@
 from django import forms
 from django.db import models
 from django.contrib import admin
+from collections import defaultdict
 from django.utils.html import format_html
+from django.db.models import Count, OuterRef, Subquery
 from .models import Document, Task, User, Token, UserTask, PayOut, VerificationFee, BankList
 
 from django.utils.translation import gettext_lazy as _
@@ -107,50 +109,66 @@ class TaskAdmin(admin.ModelAdmin):
 
 @admin.register(PayOut)
 class PayOutAdmin(admin.ModelAdmin):
-    list_display = ('dates', 'actions', 'user', 'formatted_amount', 'description', 'checkout')
+    list_display = ('dates', 'action', 'user', 'formatted_amount', 'description', 'checkout')
     search_fields = ('user', 'dates')
     list_filter = ('user__is_verify', 'dates', 'checkout')
-    actions = ['mark_credit', 'mark_debit', 'mark_cancel']
+    actions = ['cancel_withdraw', 'referral_credited', 'paid_user', 'tasks_credited']
 
     def formatted_amount(self, obj):
         return f"${obj.amount}"
     formatted_amount.short_description = 'Amount'
 
-    def mark_credit(self, request, queryset):
+    def referral_credited(self, request, queryset):
+        user_balances = defaultdict(float)
         for payout in queryset:
             if not payout.checkout:
-                if payout.actions == 'pending credit':
-                    payout.actions = 'credit'
-                    user = payout.user
-                    user.balance +=payout.amount
+                if 'Credit for Referral will be added to your account' in payout.description:
+                    payout.action = 'credit referral'
                     payout.checkout = True
-                    payout.description = 'Earned money has been credited to your account from completed tasks payments.'
-                    user.save()
+                    user_balances[payout.user] += payout.amount
                     payout.save()
-        self.message_user(request, "Selected payouts have been marked as credit.")
-    def mark_debit(self, request, queryset):
+        for user, balance_increase in user_balances.items():
+            user.balance += balance_increase
+            user.save()
+        self.message_user(request, "Selected payouts have been marked as referral creditted.")
+    def tasks_credited(self, request, queryset):
+        user_balances = defaultdict(float)
         for payout in queryset:
             if not payout.checkout:
-                if payout.actions == 'pending debit':
-                    payout.actions = 'debit'
+                if 'Credit for the tasks you’ve completed is pending' in payout.description:
+                    payout.action = 'credit'
                     payout.checkout = True
-                    payout.description = 'Funds have been successfully withdrawn from your account as per your request for cash out or transfer.'
+                    user_balances[payout.user] += payout.amount
                     payout.save()
-        self.message_user(request, "Selected payouts have been marked as debit.")
-    def mark_cancel(self, request, queryset):
+        for user, balance_increase in user_balances.items():
+            user.balance += balance_increase
+            user.save()
+        self.message_user(request, "Selected payouts have been marked as tasks creditted.")
+    def cancel_withdraw(self, request, queryset):
+        user_balances = defaultdict(float)
         for payout in queryset:
             if not payout.checkout:
-                if payout.actions == 'pending debit':
-                    user = payout.user
-                    user.balance +=payout.amount
-                    user.save()
+                if payout.action == 'pending debit':
+                    user_balances[payout.user] += payout.amount
                     payout.delete()
+        for user, balance_increase in user_balances.items():
+            user.balance += balance_increase
+            user.save()
         self.message_user(request, "Selected payouts have been marked as cancelled.")
+    def paid_user(self, request, queryset):
+        user_balances = defaultdict(float)
+        for payout in queryset:
+            if not payout.checkout:
+                if 'withdraw' in payout.description:
+                    payout.action = 'debit'
+                    payout.checkout = True
+                    payout.save()
+        self.message_user(request, "Selected payouts have been marked as paid.")
 
-    mark_debit.short_description = 'Mark selected as Debit'
-    mark_credit.short_description = 'Mark selected as Credit'
-    mark_cancel.short_description = 'Mark selected as Cancelled'
-
+    cancel_withdraw.short_description = 'Cancelled selected Withdraws'
+    referral_credited.short_description = 'Credit selected referrals'
+    tasks_credited.short_description = 'Credit selected tasks'
+    paid_user.short_description = 'Mark selected as Paid'
 
 @admin.register(UserTask)
 class UserTaskAdmin(admin.ModelAdmin):
@@ -179,7 +197,7 @@ class UserTaskAdmin(admin.ModelAdmin):
             obj.user.passTasks +=1
             obj.user.save()
             obj.delete()
-        PayOutobjects.create(user=obj.user, action='pending credit', amount=obj.task.amount)
+            PayOut.objects.create(user=obj.user, action='pending credit', amount=obj.task.amount)
         self.message_user(request, 'Selected user tasks has passed')
 
     def photo_display(self, obj):
@@ -235,8 +253,34 @@ class VerificationFeeAdmin(admin.ModelAdmin):
     is_verify.boolean = True
     documentSubmitted.boolean = True
 
+class UsageFilter(SimpleListFilter):
+    title = 'Bank Usage'
+    parameter_name = 'usage'
+
+    def lookups(self, request, model_admin):
+        return [
+            ('most_used', 'Most Used'),
+            ('least_used', 'Least Used'),
+        ]
+
+    def queryset(self, request, queryset):
+        if self.value() == 'most_used':
+            most_used_bank = PayOut.objects.values('bankcode').annotate(usage_count=Count('bankcode')).order_by('-usage_count').first()
+            if most_used_bank:
+                return queryset.filter(code=most_used_bank['bankcode'])
+        elif self.value() == 'least_used':
+            least_used_bank = PayOut.objects.values('bankcode').annotate(usage_count=Count('bankcode')).order_by('usage_count').first()
+            if least_used_bank:
+                return queryset.filter(code=least_used_bank['bankcode'])
+        return queryset
+
 @admin.register(BankList)
 class BankListAdmin(admin.ModelAdmin):
-    list_display = ('code', 'name')
-    search_fields = ('code', 'name')
+    exclude = ('code',)
+    search_fields = ('name',)
+    list_display = ('name', 'time_used')
+    list_filter = (UsageFilter, )
 
+    def time_used(self, obj):
+        return PayOut.objects.filter(bankcode=obj.code).count()
+    time_used.short_description = 'Times Used'
