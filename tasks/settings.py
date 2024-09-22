@@ -2,6 +2,12 @@ from google.oauth2 import service_account
 from pathlib import Path
 import os
 
+# FOR CPANEL
+import pymysql 
+pymysql.version_info = (1, 4, 6, 'final', 0)
+pymysql.install_as_MySQLdb()
+# ENDFOR CPANEL
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -32,10 +38,10 @@ else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',
-            'NAME': 'picquest',
-            'USER': 'picquest',
-            'PASSWORD': 'password123',
-            'HOST': 'localhost',
+            'NAME': os.getenv('DB_NAME'),
+            'USER': os.getenv('DB_USER'),
+            'PASSWORD': os.getenv('DB_PASWD'),
+            'HOST': os.getenv('DB_HOST'),
         }
     }
 
