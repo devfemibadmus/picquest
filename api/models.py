@@ -6,8 +6,8 @@ from django.contrib.auth.models import AbstractUser
 
 class User(AbstractUser):
     email = models.EmailField(unique=True)
-    rearns = models.FloatField(default=0.05)
-    balance = models.IntegerField(default=0)
+    rearns = models.FloatField(default=0.3)
+    balance = models.FloatField(default=0)
     pendTasks = models.IntegerField(default=0)
     failTasks = models.IntegerField(default=0)
     passTasks = models.IntegerField(default=0)
@@ -69,6 +69,19 @@ class Token(models.Model):
     def __str__(self):
         return self.key
 
+class BankList(models.Model):
+    code = models.IntegerField(unique=True)
+    name = models.CharField(max_length=100, unique=True)
+
+    def __str__(self):
+        return self.name
+    
+    def save(self, *args, **kwargs):
+        if not self.code:
+            last_instance = BankList.objects.last()
+            self.code = last_instance.id + 1 if last_instance else 1
+        super().save(*args, **kwargs)
+
 class PayOut(models.Model):
     ACTION_CHOICES = [
         ('debit', 'Debit'),
@@ -87,26 +100,28 @@ class PayOut(models.Model):
     ]
     
     amount = models.FloatField()
+    bankcode = models.CharField(max_length=50)
+    address = models.CharField(max_length=225)
     dates = models.DateField(default=timezone.now)
     checkout = models.BooleanField(default=False)
-    actions = models.CharField(max_length=15, choices=ACTION_CHOICES, default='pending debit')
+    action = models.CharField(max_length=15, choices=ACTION_CHOICES, default='pending debit')
     description = models.CharField(max_length=200, choices=DESCRIPTION_CHOICES, default='Your request to withdraw funds is currently under review and is awaiting approval for processing.')
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def save(self, *args, **kwargs):
-        if self.actions == 'debit':
+        if self.action == 'debit':
             self.description = 'Funds have been successfully withdrawn from your account as per your request for cash out or transfer.'
-        elif self.actions == 'credit':
+        elif self.action == 'credit':
             self.description = 'Earned money has been credited to your account from completed tasks payments.'
-        elif self.actions == 'credit referral':
-            self.actions = 'credit'
+        elif self.action == 'credit referral':
+            self.action = 'credit'
             self.description = 'Referral Earned money has been credited to your account from completed tasks payments.'
-        elif self.actions == 'pending debit':
+        elif self.action == 'pending debit':
             self.description = 'Your request to withdraw funds is currently under review and is awaiting approval for processing.'
-        elif self.actions == 'pending credit':
+        elif self.action == 'pending credit':
             self.description = 'Credit for the tasks you’ve completed is pending and will be added to your account once reviewed.'
-        elif self.actions == 'referral':
-            self.actions = 'pending credit'
+        elif self.action == 'referral':
+            self.action = 'pending credit'
             self.description = 'Credit for Referral will be added to your account once the referred user verifies their account.'
         super().save(*args, **kwargs)
 
@@ -120,12 +135,4 @@ class VerificationFee(models.Model):
 
     def __str__(self):
         return self.user.email
-
-class BankList(models.Model):
-    code = models.IntegerField(unique=True)
-    name = models.CharField(max_length=100, unique=True)
-
-    def __str__(self):
-        return self.name
-    
 
