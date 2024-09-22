@@ -62,10 +62,10 @@ class UserView:
     def getUserTasks(self):
         user = self.user
         today = timezone.now().date()
-        tasks_today = UserTask.objects.filter(user=user, created_at__date=today).count()
-        tasks_remaining = user.daily_task - tasks_today
-        user_task_ids = UserTask.objects.filter(user=self.user).values_list('task_id', flat=True)
-        tasks_available = Task.objects.exclude(id__in=user_task_ids).order_by('?')[:tasks_remaining]
+        total_task_taken = user.pendTasks+user.failTasks+user.passTasks
+        tasks_taken_today = total_task_taken % user.daily_task
+        total_tasks_left = user.daily_task - tasks_taken_today
+        tasks_available = Task.objects.all()[total_task_taken:total_task_taken+total_tasks_left+1]
         tasks = list(tasks_available.values())
         return tasks
         
@@ -199,7 +199,7 @@ def callback(request, email):
                 payment.save()
                 referral = user.referral
                 payout = PayOut.objects.filter(user=referral, action='pending credit', description__icontains="Referral")
-                payout.actions = 'credit referral'
+                payout.action = 'credit referral'
                 payout.checkout = True
                 payout.save()
     return redirect(app_url)
@@ -226,16 +226,18 @@ def submit(request):
 def withdraw(request):
     if request.method != "POST":
         return JsonResponse({'error': True, 'message': 'Method not allowed'}, status=405)
+    bankcode = request.POST.get('bname')
     amount = request.POST.get('amount')
+    address = request.POST.get('address')
     token_key = request.POST.get('token')
     if token_key is None or not Token.objects.filter(key=token_key).exists():
         return JsonResponse({'error': True, 'message': 'Logout and try again'}, status=400)
     user = Token.objects.get(key=token_key).user
-    if amount is None or float(amount) > user.balance:
+    if amount is None or not BankList.objects.filter(code=int(bankcode)).exists() or address is None or float(amount) > user.balance:
         return JsonResponse({'error': True, 'message': 'Invalid data, try again'}, status=400)
     user.balance = user.balance - float(amount)
     user.save()
-    PayOut.objects.create(user=user, amount=amount)
+    PayOut.objects.create(user=user, amount=amount, bankcode=bankcode, address=address)
     return JsonResponse({'success': True}, status=200)
 
 @csrf_exempt
