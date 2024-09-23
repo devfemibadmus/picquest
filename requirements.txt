@@ -1,0 +1,10 @@
+asgiref==3.8.1
+cffi==1.16.0
+cryptography==42.0.7
+Django==4.2.10
+pillow==10.3.0
+pycparser==2.22
+PyMySQL==1.1.1
+django-storages==1.14.4
+google-cloud-storage==2.18.2
+django-cors-headers==4.4.0
