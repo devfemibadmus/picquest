@@ -1,5 +1,5 @@
+from datetime import date
 import json, requests, time
-from datetime import datetime
 from django.conf import settings
 from django.utils import timezone
 from django.http import JsonResponse
@@ -61,11 +61,17 @@ class UserView:
     
     def getUserTasks(self):
         user = self.user
-        today = timezone.now().date()
-        total_task_taken = user.pendTasks+user.failTasks+user.passTasks
-        tasks_taken_today = total_task_taken % user.daily_task
+        today = date.today().strftime("%Y-%m-%d")
+        total_task_taken = user.last_time[0]
+        tasks_taken_today = user.last_time[1]
+        tasks_taken_today_date = user.last_time[2]
+        if tasks_taken_today_date != today:
+            user.last_time = [total_task_taken, 0, today]
+            user.save()
         total_tasks_left = user.daily_task - tasks_taken_today
-        tasks_available = Task.objects.all()[total_task_taken:total_task_taken+total_tasks_left+1]
+        if total_tasks_left == 0:
+            return []
+        tasks_available = Task.objects.all()[total_task_taken:total_task_taken+total_tasks_left]
         tasks = list(tasks_available.values())
         return tasks
         
@@ -219,6 +225,8 @@ def submit(request):
     tasks = Task.objects.get(id=task_id)
     UserTask.objects.create(user=user, task=tasks, created_at=timezone.now, photo=photo_file)
     user.pendTasks +=1
+    user.last_time[0] +=1
+    user.last_time[1] +=1
     user.save()
     return JsonResponse({'success': True, 'message': 'Task submitted successfully'}, status=200)
 
