@@ -1,6 +1,5 @@
 from datetime import date
 import json, requests, time
-from django.conf import settings
 from django.utils import timezone
 from django.http import JsonResponse
 from .forms import SigninForm, SignupForm
@@ -10,7 +9,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from .models import User, UserTask, Document, Token, Task, PayOut, VerificationFee, BankList
 
-sk_token = settings.SK_TOKEN
+sk_token = ''
 app_url = '/app/'
 
 def load(request):
@@ -172,7 +171,7 @@ def payment(request):
     user = Token.objects.get(key=token_key).user
     url = "https://api.paystack.co/transaction/initialize"
     headers = {"Authorization": f"Bearer {sk_token}", "Content-Type": "application/json"}
-    data = {"email": user.email, "amount": 2100, "callback_url": f"{request.scheme}://{request.get_host()}/api/v1/callback/{user.email}/"}
+    data = {"email": user.email, "amount": 100000, "callback_url": f"{request.scheme}://{request.get_host()}/api/v1/callback/{user.email}/"}
     response = requests.post(url, headers=headers, json=data)
     if response.status_code == 200:
         data = response.json()

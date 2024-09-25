@@ -21,29 +21,13 @@ def load_env_vars(env_file_path):
 load_env_vars(os.path.join(BASE_DIR, '.env'))
 
 DEBUG = os.environ.get('DEBUG', True) == 'True'
-SK_TOKEN = os.getenv('SK_TOKEN')
 
 if DEBUG == True:
     ALLOWED_HOSTS = ['*']
     SECRET_KEY = 'django-insecure-mnaraanlde#ue56^7a*afkqatl7ahtq66e&*rxlc%t7vgev7ir'
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
-    }
 else:
     ALLOWED_HOSTS = ['picquest.online']
     SECRET_KEY = os.getenv('SECRET')
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.mysql',
-            'NAME': os.getenv('DB_NAME'),
-            'USER': os.getenv('DB_USER'),
-            'PASSWORD': os.getenv('DB_PASWD'),
-            'HOST': os.getenv('DB_HOST'),
-        }
-    }
 
 # Application definition
 
