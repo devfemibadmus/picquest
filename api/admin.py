@@ -3,27 +3,12 @@ from django.db import models
 from django.contrib import admin
 from collections import defaultdict
 from django.utils.html import format_html
+from django.contrib.admin import SimpleListFilter
+from django.utils.translation import gettext_lazy as _
 from django.db.models import Count, OuterRef, Subquery
 from .models import Document, Task, User, Token, UserTask, PayOut, VerificationFee, BankList
 
-from django.utils.translation import gettext_lazy as _
-from django.contrib.admin import SimpleListFilter
 
-class UserTaskAdminFilter(SimpleListFilter):
-    title = _('Photo Deleted')
-    parameter_name = 'is_photo_deleted'
-
-    def lookups(self, request, model_admin):
-        return (
-            ('yes', _('Yes')),
-            ('no', _('No')),
-        )
-
-    def queryset(self, request, queryset):
-        if self.value() == 'yes':
-            return queryset.filter(photo='')
-        if self.value() == 'no':
-            return queryset.exclude(photo='')
 
 class DocumentAdminFilter(SimpleListFilter):
     title = _('File Deleted')
@@ -174,7 +159,7 @@ class PayOutAdmin(admin.ModelAdmin):
 class UserTaskAdmin(admin.ModelAdmin):
     list_display = ('task_title', 'created_at', 'user_email', 'photo_display')
     search_fields = ('task__title', 'user__email')
-    list_filter = ('user__is_verify', 'created_at', UserTaskAdminFilter)
+    list_filter = ('user__is_verify', 'created_at')
     actions = ['fail_task', 'pass_task']
 
     def task_title(self, obj):
@@ -220,6 +205,7 @@ class UserAdmin(admin.ModelAdmin):
     list_display = ('email', 'pendTasks', 'failTasks', 'passTasks', 'balance', 'is_verify', 'hasPaid', 'documentSubmitted')
     search_fields = ('email',)
     list_filter = ('is_verify', 'hasPaid', 'documentSubmitted')
+    exclude = ('password', 'last_name', 'groups', 'is_staff', 'last_login', 'user_permissions', 'is_superuser', 'is_active')
 
 @admin.register(Token)
 class TokenAdmin(admin.ModelAdmin):
