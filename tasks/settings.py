@@ -18,9 +18,11 @@ def load_env_vars(env_file_path):
                 key, value = line.strip().split('=', 1)
                 os.environ[key] = value
 
-load_env_vars(os.path.join(BASE_DIR, '.env'))
+# load_env_vars(os.path.join(BASE_DIR, '.env'))
 
-DEBUG = os.environ.get('DEBUG', True) == 'True'
+# DEBUG = os.environ.get('DEBUG', True) == 'True'
+
+DEBUG = True
 
 if DEBUG == True:
     ALLOWED_HOSTS = ['*']
@@ -123,7 +125,7 @@ USE_TZ = True
 
 GS_BUCKET_NAME = 'picquestonline'
 MEDIA_URL = f'https://storage.googleapis.com/{GS_BUCKET_NAME}/'
-DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
+# DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
 GS_CREDENTIALS = service_account.Credentials.from_service_account_file('service-account.json')
 
 STATIC_URL = '/static/'
