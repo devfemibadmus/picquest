@@ -19,7 +19,6 @@ class User(AbstractUser):
     is_verify = models.BooleanField(default=False)
     minWithdraw = models.IntegerField(default=100)
     documentSubmitted = models.BooleanField(default=False)
-    last_time = models.JSONField(default=last_time_default)
     referral = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL, related_name='referred_users')
 
     USERNAME_FIELD = 'email'

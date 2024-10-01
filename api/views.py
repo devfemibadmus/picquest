@@ -60,17 +60,11 @@ class UserView:
     
     def getUserTasks(self):
         user = self.user
-        today = date.today().strftime("%Y-%m-%d")
-        total_task_taken = user.last_time[0]
-        tasks_taken_today = user.last_time[1]
-        tasks_taken_today_date = user.last_time[2]
-        if tasks_taken_today_date != today:
-            user.last_time = [total_task_taken, 0, today]
-            user.save()
-        total_tasks_left = user.daily_task - tasks_taken_today
-        if total_tasks_left == 0:
-            return []
-        tasks_available = Task.objects.all()[total_task_taken:total_task_taken+total_tasks_left]
+        today = timezone.now().date()
+        tasks_today = UserTask.objects.filter(user=user, created_at__date=today).count()
+        tasks_remaining = user.daily_task - tasks_today
+        user_task_ids = UserTask.objects.filter(user=self.user).values_list('task_id', flat=True)
+        tasks_available = Task.objects.exclude(id__in=user_task_ids).order_by('?')[:tasks_remaining]
         tasks = list(tasks_available.values())
         return tasks
         
@@ -224,8 +218,6 @@ def submit(request):
     tasks = Task.objects.get(id=task_id)
     UserTask.objects.create(user=user, task=tasks, created_at=timezone.now, photo=photo_file)
     user.pendTasks +=1
-    user.last_time[0] +=1
-    user.last_time[1] +=1
     user.save()
     return JsonResponse({'success': True, 'message': 'Task submitted successfully'}, status=200)
 
