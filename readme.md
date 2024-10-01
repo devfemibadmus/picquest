@@ -1,9 +1,9 @@
 # Pic Quest
 
-Check out app [devfemibadmus/picquestf](https://github.com/devfemibadmus/picquestf)! Django admin is cool, but what’s even cooler is supercharging it to make you feel like the ultimate admin overlord—like, 'Oh yeah, I'm the admin; I can click all the things!' 😂, below are some explanation/code.
+Check out app [devfemibadmus/picquestf](https://github.com/devfemibadmus/picquestf) Django admin is cool, but what’s even cooler is supercharging it to make you feel like the ultimate admin overlord—like, 'Oh yeah, I'm the admin; I can click all the things!' 😂, below are some explanation/code.
 
 
-## VIEWS
+## Views
 
 - **Registration/Login**: Handles user signup and login, ensuring unique emails.
 - **Data Retrieval**: Retrieves user info and updates authentication tokens.
@@ -18,7 +18,7 @@ Check out app [devfemibadmus/picquestf](https://github.com/devfemibadmus/picques
 - **Available Tasks**: Provides a list of tasks not yet assigned to the user, randomly selected up to the remaining limit for the day.
 
 
-## Admin Management
+## Admin
 
 - **Document Management**: Administers user-submitted documents, allowing verification and unverification of documents based on provided government and student IDs. Includes custom filters to show deleted files and user verification status.
 
@@ -60,7 +60,7 @@ class UsageFilter(SimpleListFilter):
         return queryset  # Return the original queryset if no filter is applied
 ```
 
-**Payout Management**
+**Payout**
 
 ```python
 @admin.register(PayOut)
