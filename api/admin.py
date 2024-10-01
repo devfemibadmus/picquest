@@ -167,13 +167,18 @@ class UserTaskAdmin(admin.ModelAdmin):
 
     def user_email(self, obj):
         return obj.user.email
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.filter(completed=False)
  
     def fail_task(self, request, queryset):
         for obj in queryset:
             obj.user.pendTasks -=1
             obj.user.failTasks +=1
             obj.user.save()
-            obj.delete()
+            obj.completed = True
+            obj.save()
         self.message_user(request, 'Selected user tasks has failed')
     
     def pass_task(self, request, queryset):
@@ -181,7 +186,8 @@ class UserTaskAdmin(admin.ModelAdmin):
             obj.user.pendTasks -=1
             obj.user.passTasks +=1
             obj.user.save()
-            obj.delete()
+            obj.completed = True
+            obj.save()
             PayOut.objects.create(user=obj.user, action='pending credit', amount=obj.task.amount)
         self.message_user(request, 'Selected user tasks has passed')
 

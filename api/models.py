@@ -58,6 +58,7 @@ class UserTask(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     task = models.ForeignKey(Task, on_delete=models.CASCADE)
     photo = models.ImageField(upload_to="User Tasks/")
+    completed = models.BooleanField(default=False)
 
     def __str__(self):
         return self.task.title
