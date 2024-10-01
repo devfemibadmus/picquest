@@ -141,3 +141,24 @@ class PayOutAdmin(admin.ModelAdmin):
     paid_user.short_description = 'Mark selected as Paid'
 ```
 
+#### more? check api/admin.py
+
+## Production Setup
+
+1. Clone the repositories:
+   - App: `git clone https://github.com/devfemibadmus/picquestf`
+   - Website: `git clone https://github.com/devfemibadmus/picquest`
+
+2. Build the Flutter web app:
+   ```bash
+   cd picquestf
+   flutter build web
+   ```
+
+3. Copy the built web app to your Django project:
+   ```bash
+   cp -r build/web ../picquest/static/app
+   ```
+
+4. Continue with your Django settings configuration.
+
